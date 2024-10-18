@@ -1,0 +1,27 @@
+name: Deploy Static Website
+
+# 在 push 到 main 分支时触发部署
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 检出仓库代码
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. 设置 GitHub Pages 发布环境
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+
+    # 3. 部署到 GitHub Pages
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages  # 发布到 gh-pages 分支
+        folder: ./        # 你要发布的文件夹，通常是项目根目录
