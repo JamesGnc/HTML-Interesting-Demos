@@ -193,7 +193,9 @@
       scene.add(directionalLight)
 
       // 定义自动旋转速度和轴
-      const autoRotationSpeed = 0.0005
+      // const autoRotationSpeed = 0.0005
+      const autoRotationSpeed = 0.002
+
       let autoRotationAxis = new THREE.Vector3(0, 1, 0).normalize()
       let currentAngularVelocity = autoRotationAxis.clone().multiplyScalar(autoRotationSpeed)
 
@@ -556,5 +558,6 @@
       }
     </script>
   </body>
+  
 </html>
 
