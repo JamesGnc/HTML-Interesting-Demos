@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        html,body {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        overflow: hidden;
+        background: #f7d6ff;
+        background-image: linear-gradient(to bottom right, #91defe, #99c0f9, #bdb6ec, #d7b3e3, #efb3d5, #f9bccc);
+    }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0; /* 浅灰色背景 */
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid #333;
+            background-color: #ffffff; /* 更明亮的背景 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #score {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #buttonContainer {
+            display: flex;
+            gap: 10px; /* 按钮之间的间距 */
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #4caf50; /* 深绿色按钮 */
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #388e3c; /* 按钮悬停颜色 */
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="buttonContainer">
+        <button id="restartButton">Restart Game</button>
+        <button id="pauseButton">Pause</button>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const restartButton = document.getElementById('restartButton');
+        const pauseButton = document.getElementById('pauseButton');
+
+        const boxSize = 20;
+        const halfRectWidth = boxSize/2;
+        const initDirection = 'UP';
+        const initIntervalTime = 200;
+        let snake;
+        let direction;
+        let currentDirection;
+        let food;
+        let score = 0;
+        let game;
+        let isPaused = false;
+        
+        function initGame() {
+            snake = [{ x: 9 * boxSize, y: 9 * boxSize, direction: initDirection }];
+            direction = initDirection;
+            currentDirection = initDirection;
+            food = generateFood();
+            score = 0;
+            scoreDisplay.innerText = `Score: ${score}`;
+            clearInterval(game);
+            game = setInterval(draw, initIntervalTime);
+        }
+
+        restartButton.addEventListener('click', initGame);
+        pauseButton.addEventListener('click', togglePause);
+
+        document.addEventListener('keydown', (event) => {
+            if (!isPaused) {
+                if (event.key === 'ArrowUp' && currentDirection !== 'DOWN') direction = 'UP';
+                else if (event.key === 'ArrowDown' && currentDirection !== 'UP') direction = 'DOWN';
+                else if (event.key === 'ArrowLeft' && currentDirection !== 'RIGHT') direction = 'LEFT';
+                else if (event.key === 'ArrowRight' && currentDirection !== 'LEFT') direction = 'RIGHT';
+            }
+        });
+
+        function generateFood() {
+            let newFood;
+            let valid = false;
+
+            while (!valid) {
+                newFood = {
+                    x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
+                    y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
+                };
+                valid = !snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
+            }
+            return newFood;
+        }
+
+        function draw() {
+            // Snake movement
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if (direction === 'LEFT') snakeX -= boxSize;
+            if (direction === 'UP') snakeY -= boxSize;
+            if (direction === 'RIGHT') snakeX += boxSize;
+            if (direction === 'DOWN') snakeY += boxSize;
+
+            // Check for food collision
+            if (snakeX === food.x && snakeY === food.y) {
+                food = generateFood(); // Generate new food
+                score++;
+                scoreDisplay.innerText = `Score: ${score}`;
+            } else {
+                snake.pop(); // Remove tail
+            }
+
+            // Add new head
+            const newHead = { x: snakeX, y: snakeY,  direction};
+            const hitSegmentIndex = collision(newHead);
+            if (hitSegmentIndex !== -1 || snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height) {
+                alert('Game Over');
+                clearInterval(game);
+                return;
+            } else {
+                snake.unshift(newHead); // Only add new head if no collision
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw food
+            drawFood();
+
+            // Draw snake
+            drawSnake();
+
+            currentDirection = direction;
+        }
+
+        function drawSnake() {
+            const head = snake[0];
+            const length = snake.length;
+
+            // Draw the head as a rectangle with a half-circle
+            ctx.fillStyle = '#4caf50'; // 蛇头颜色 
+
+            ctx.beginPath();
+            // Draw half-circle for the head based on direction
+            
+            const arcPoint = { x: head.x + halfRectWidth, y: head.y + halfRectWidth };
+            
+            if (direction === 'UP') {
+                ctx.arc(arcPoint.x, arcPoint.y, halfRectWidth, Math.PI, 0, false);
+                if (length > 1) {
+                  ctx.lineTo(head.x + boxSize, head.y + boxSize);
+                  ctx.lineTo(head.x, head.y + boxSize);
+                  ctx.lineTo(head.x, arcPoint.y);
+                  ctx.closePath();
+                }
+            } else if (direction === 'DOWN') {
+                ctx.arc(arcPoint.x, arcPoint.y, halfRectWidth, 0, Math.PI, false);
+                if (length > 1) {
+                  ctx.lineTo(head.x, head.y);
+                  ctx.lineTo(head.x+ boxSize, head.y) ;
+                  ctx.lineTo(head.x+ boxSize, arcPoint.y);
+                  ctx.closePath();
+                }
+                
+            } else if (direction === 'LEFT') {
+                ctx.arc(arcPoint.x, arcPoint.y, halfRectWidth, Math.PI / 2, Math.PI * 1.5, false);
+                if (length > 1) {
+                  ctx.lineTo(head.x + boxSize, head.y);
+                  ctx.lineTo(head.x+ boxSize, head.y + boxSize );
+                  ctx.lineTo(arcPoint.x, head.y + boxSize);
+                  ctx.closePath();
+                }
+            } else if (direction === 'RIGHT') {
+                ctx.arc(arcPoint.x, arcPoint.y, halfRectWidth, Math.PI * 1.5, Math.PI / 2, false);
+                if (length > 1) {
+                  ctx.lineTo(head.x, head.y + boxSize);
+                  ctx.lineTo(head.x, head.y);
+                  ctx.lineTo(arcPoint.x, head.y);
+                  ctx.closePath();
+                }
+            }
+            ctx.fill();
+            ctx.strokeStyle = '#388e3c'; // 边框颜色
+            ctx.stroke();
+
+            // Draw the body segments
+            for (let i = 1; i < length - 1; i++) {
+                const segment = snake[i];
+                ctx.fillStyle = '#4caf50'; // 身体颜色
+                ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+                ctx.strokeStyle = '#388e3c'; // 边框颜色
+                ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
+            }
+
+            // Draw triangle for the tail, consistent with direction
+            const tail = snake[length - 1];
+            const tailWillDirection = length > 1 ? snake[length - 2].direction : tail.direction;
+            ctx.fillStyle = '#4caf50'; // 尾部颜色
+            ctx.beginPath();
+            if (tailWillDirection === 'UP') {
+              if (length > 1) {
+                ctx.moveTo(tail.x, tail.y);
+                ctx.lineTo(tail.x + boxSize, tail.y);
+                ctx.lineTo(tail.x + halfRectWidth, tail.y + boxSize);
+              } else {
+                ctx.moveTo(tail.x, arcPoint.y);
+                ctx.lineTo(tail.x + boxSize, arcPoint.y);
+                ctx.lineTo(tail.x + halfRectWidth, tail.y + boxSize);
+              }
+                
+            } else if (tailWillDirection === 'DOWN') {
+                if (length > 1){
+                  ctx.moveTo(tail.x, tail.y + boxSize);
+                  ctx.lineTo(tail.x + boxSize, tail.y + boxSize);
+                  ctx.lineTo(tail.x + halfRectWidth, tail.y);
+                } else {
+                  ctx.moveTo(tail.x, arcPoint.y);
+                  ctx.lineTo(arcPoint.x, tail.y);
+                  ctx.lineTo(tail.x + boxSize, arcPoint.y);
+                }
+            } else if (tailWillDirection === 'LEFT') {
+              if (length > 1){
+                ctx.moveTo(tail.x, tail.y);
+                ctx.lineTo(tail.x, tail.y + boxSize);
+                ctx.lineTo(tail.x + boxSize, tail.y + halfRectWidth);
+              } else {
+                ctx.moveTo(arcPoint.x, tail.y);
+                ctx.lineTo(tail.x + boxSize, arcPoint.y);
+                ctx.lineTo(arcPoint.x, tail.y + boxSize);
+              }
+            } else if (tailWillDirection === 'RIGHT') {
+              if (length > 1){
+                ctx.moveTo(tail.x + boxSize, tail.y);
+                ctx.lineTo(tail.x + boxSize, tail.y + boxSize);
+                ctx.lineTo(tail.x, tail.y + halfRectWidth);
+              } else {
+                ctx.moveTo(arcPoint.x, tail.y);
+                ctx.lineTo(tail.x, arcPoint.y);
+                ctx.lineTo(arcPoint.x, tail.y + boxSize);
+              }
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#388e3c';
+            ctx.stroke();
+        }
+
+        function drawFood() {
+            ctx.fillStyle = '#ff5252'; // 食物颜色为鲜艳的红色
+            ctx.beginPath();
+            ctx.arc(food.x + halfRectWidth, food.y + halfRectWidth, halfRectWidth, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 5;
+            ctx.shadowOffsetY = 5;
+            ctx.closePath();
+        }
+
+        function collision(head) {
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    return i; // Return the index of the segment that was hit
+                }
+            }
+            return -1; // No collision
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            if (isPaused) {
+                clearInterval(game);
+                pauseButton.innerText = 'Resume';
+            } else {
+                game = setInterval(draw, initIntervalTime);
+                pauseButton.innerText = 'Pause';
+            }
+        }
+
+        // Start the game for the first time
+        initGame();
+    </script>
+</body>
+</html>
+
