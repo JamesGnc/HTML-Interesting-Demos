@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerald</title>
+    <style>
+        body {
+            margin: 0 auto;
+            background: #fdd;
+        }
+
+        svg {
+            height:200px;
+            width:200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+    <svg viewbox="0 0 120 120" preserveAspectRatio="auto">
+        <path
+            d="M 95 65 l -35 35 l -35 -35 a 25 25 90 0 1 35 -36 a 25 25 90 0 1 35 36 l -35 33 l 38 -37 l -39 36 l 41 -40 l -42 39 l 43 -42 l -44 41 l 45 -44 l -46 43 l 46 -45 l -47 44 l 47 -46 l -48 45 l 48 -47 l -49 46 l 49 -48 l -50 47 l 49 -48 l -50 47 l 50 -49 l -51 48 l 50 -49 l -51 48 l 51 -50 l -52 49 l 51 -50 l -52 49 l 51 -50 l -52 49 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 51 -50 l -52 49 l 51 -50 l -52 49 l 51 -50 l -52 49 l 51 -50 l -52 49 l 50 -49 l -51 48 l 50 -49 l -51 48 l 49 -48 l -50 47 l 48 -47 l -49 46 l 47 -46 l -48 45 l 46 -45 l -47 44 l 45 -44 l -46 43 l 44 -43 l -45 42 l 42 -41 l -43 40 l 39 -38 l -40 37 l 35 -34 l -36 33 l 34 -33 l -35 32 l 34 -33 l -35 32 l 34 -33 l -35 32 l 34 -33 l -35 32 l 34 -33 l -34 31 l 32 -31 l -33 30 l 32 -31 l -32 29 l 30 -29 l -30 27 l 29 -28 l -30 27 l 28 -27 l -28 25 l 26 -25 l -26 23 l 24 -23 l -24 21 l 22 -21 l -21 18 l 19 -18 l -19 16 l 16 -15 l -15 13 l 13 -13 l -11 9 l 7 -7z"
+            fill="none" stroke="red" stroke-width="2" stroke-dasharray="6420.4893" stroke-dashoffset="6420.4893"
+            stroke-linecap="round" stroke-linejoin="round">
+            <animate id="heartAnim" attributeName="stroke-dashoffset" dur="20s" values="6420.4893; 0"
+                repeatCount="indefinite" keyTimes="0;1" keySplines="0.86 0.75 0.23 0.79" calcMode="spline" />
+            <animate attributeName="opacity" attributeName="opacity" values="1;1;0" repeatCount="indefinite"
+                keyTimes="0;0.95;1" dur="20s" begin="0s" />
+        </path>
+        <g transform="translate(0 0.5)">
+            <path class="handBack" d="M 5 -42 h 24 v 18 h -24 z" fill="rgb(94, 55, 46)" />
+            <path class="backFingers" d="M 13 -26 c -1 -4 2 -10 8 -15 m 1 11 c 0 -3 2 -6 5 -8" fill="none" stroke="#000"
+                stroke-linecap="round" stroke-width="2" />
+            <path class="penTip" d="M 3 -7 L 0 -1" stroke="#d00" stroke-linecap="round" stroke-width="3" />
+            <path class="pen" d="M 3 -7 L 39 -85" fill="none" stroke="#000" stroke-linecap="round" stroke-width="7" />
+            <path class="hand"
+                d="M 151 -58 l -89 8 l -29 -12 q -6 -3 -13 1 l -15 8 q -7 4 -8 10 l -3 13 q 1 9 9 16 l 2 -4 c -1 -2 0 -5 2 -6 l -1 -3 q -1 -3 1 -7 l 3 -5 q 3 -3 5 -3 l 10 0 c 4 0 6 7 0 10 l -18 8 c -2 1 -3 4 -2 6 c 0 0 0 2 4 5 l 1 2 a 1 1 0 0 0 7 -4 a 1 1 0 0 0 8 -2 a 1 1 0 0 0 8 -2 l -24 6 l 40 -10 q 5 -1 8 -3 l 7 -4 l 87 3 z"
+                fill="rgb(94, 55, 46)" stroke="#000" stroke-linejoin="round" stroke-width="2" />
+            <path class="penFront" d="M 16 -35 L 39 -85" fill="none" stroke="#000" stroke-linecap="round"
+                stroke-width="7" />
+            <animateMotion dur="20s" repeatCount="indefinite"
+                path="M 95 65 l -35 35 l -35 -35 a 25 25 90 0 1 35 -36 a 25 25 90 0 1 35 36 l -35 33 l 38 -37 l -39 36 l 41 -40 l -42 39 l 43 -42 l -44 41 l 45 -44 l -46 43 l 46 -45 l -47 44 l 47 -46 l -48 45 l 48 -47 l -49 46 l 49 -48 l -50 47 l 49 -48 l -50 47 l 50 -49 l -51 48 l 50 -49 l -51 48 l 51 -50 l -52 49 l 51 -50 l -52 49 l 51 -50 l -52 49 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 52 -51 l -53 50 l 51 -50 l -52 49 l 51 -50 l -52 49 l 51 -50 l -52 49 l 51 -50 l -52 49 l 50 -49 l -51 48 l 50 -49 l -51 48 l 49 -48 l -50 47 l 48 -47 l -49 46 l 47 -46 l -48 45 l 46 -45 l -47 44 l 45 -44 l -46 43 l 44 -43 l -45 42 l 42 -41 l -43 40 l 39 -38 l -40 37 l 35 -34 l -36 33 l 34 -33 l -35 32 l 34 -33 l -35 32 l 34 -33 l -35 32 l 34 -33 l -35 32 l 34 -33 l -34 31 l 32 -31 l -33 30 l 32 -31 l -32 29 l 30 -29 l -30 27 l 29 -28 l -30 27 l 28 -27 l -28 25 l 26 -25 l -26 23 l 24 -23 l -24 21 l 22 -21 l -21 18 l 19 -18 l -19 16 l 16 -15 l -15 13 l 13 -13 l -11 9 l 7 -7z"
+                keyTimes="0;1" keySplines="0.86 0.75 0.23 0.79" calcMode="spline" />
+        </g>
+    </svg>
+</body>
+
+</html>
