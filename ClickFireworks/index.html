@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>烟花特效</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function getRandom(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function drawCircle({ x, y, radius, color, opacity = 1 }) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        class Firework {
+            constructor(x, y) {
+                this.x = x;
+                this.y = canvas.height;
+                this.targetY = y;
+                this.radius = 5;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.speed = getRandom(4, 7);
+                this.exploded = false;
+                this.particles = [];
+            }
+
+            launch() {
+                if (this.y > this.targetY) {
+                    this.y -= this.speed;
+                    drawCircle({ x: this.x, y: this.y, radius: this.radius, color: this.color });
+                } else {
+                    this.exploded = true;
+                    for (let i = 0; i < 50; i++) {
+                        this.particles.push(new Particle(this.x, this.y, this.color));
+                    }
+                }
+            }
+
+            update() {
+                if (!this.exploded) {
+                    this.launch();
+                } else {
+                    this.particles.forEach(p => p.update());
+                    this.particles = this.particles.filter(p => p.opacity > 0);
+                }
+            }
+
+            isDone() {
+                return this.exploded && this.particles.length === 0;
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = getRandom(1, 3);
+                this.angle = getRandom(0, 2 * Math.PI);
+                this.speed = getRandom(1, 5);
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.gravity = 0.1;
+                this.opacity = 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += this.gravity;
+                this.opacity -= 0.02;
+                drawCircle({ x: this.x, y: this.y, radius: this.radius, color: this.color, opacity: this.opacity });
+            }
+        }
+
+        const fireworks = [];
+
+        function animate() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                if (fireworks[i].isDone()) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function launchFirework(x, y) {
+            fireworks.push(new Firework(x, y));
+        }
+
+        // 自动发射烟花（每 1.5 秒发射一次）
+        setInterval(() => {
+            launchFirework(getRandom(100, canvas.width - 100), getRandom(200, canvas.height / 2));
+        }, 1500);
+
+        // 点击屏幕触发烟花
+        document.addEventListener("click", (event) => {
+            launchFirework(event.clientX, event.clientY);
+        });
+
+        animate();
+    </script>
+
+</body>
+</html>
