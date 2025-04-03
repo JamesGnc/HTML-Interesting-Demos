@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerald</title>
+    <style>
+        :root {
+            --primary-pink: #c3809f;
+            --secondary-lavender: #a98ad9;
+            --accent-mint: #7fcca3;
+            --accent-yellow: #f5ca71;
+            --light-pink: #f9eef1;
+            --dark-text: #333333;
+            --light-text: #666666;
+            --white: #ffffff;
+            --off-white: #f9f7fa;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title::after,
+        .hero-title::after {
+            height: 2px;
+            opacity: 0.8;
+        }
+
+        .hero-title,
+        .section-title {
+            color: var(--primary-pink);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            color: var(--dark-text);
+            line-height: 1.6;
+            background-color: var(--white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .logo {
+            font-family: 'Abril Fatface', serif;
+            letter-spacing: 0.5px;
+        }
+
+        .logo {
+            font-weightL: 200;
+        }
+
+        h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        p,
+        body,
+        button,
+        input,
+        textarea,
+        select {
+            font-family: Arial, sans-serif;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--primary-pink);
+            letter-spacing: 1px;
+        }
+
+        .specialty-price {
+            font-family: 'Abril Fatface', serif;
+            letter-spacing: 0;
+        }
+
+        .process-number {
+            font-family: 'Abril Fatface', serif;
+            letter-spacing: 0;
+        }
+
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--dark-text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-text);
+            cursor: pointer;
+        }
+
+        .hero {
+            background: linear-gradient(135deg,
+                    hsl(340, 60%, 97%) 0%,
+                    hsl(270, 40%, 95%) 50%,
+                    hsl(150, 40%, 95%) 100%);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 70% 20%, hsla(40, 85%, 70%, 0.4) 0%, transparent 35%),
+                radial-gradient(circle at 20% 80%, hsla(342, 65%, 69%, 0.4) 0%, transparent 35%);
+            z-index: 1;
+        }
+
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content {
+            text-align: left;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-image {
+            position: relative;
+            z-index: 2;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            height: 450px;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content {
+                text-align: center;
+                order: 2;
+            }
+
+            .hero-image {
+                order: 1;
+                height: 300px;
+                margin-bottom: 30px;
+            }
+        }
+
+        .hero-title {
+            margin-bottom: 20px;
+        }
+
+        .hero-title::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right,
+                    var(--primary-pink),
+                    var(--secondary-lavender));
+            margin: 20px auto;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .button-primary {
+            background-color: var(--primary-pink);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background-color: #d06686;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-secondary {
+            background-color: white;
+            color: var(--dark-text);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .button-secondary:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-buttons .button {
+            width: 180px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            .hero-buttons {
+                align-items: center;
+            }
+        }
+
+        .button-primary {
+            background-color: var(--primary-pink);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background-color: #d06686;
+        }
+
+        .button-secondary {
+            background-color: white;
+            color: var(--dark-text);
+        }
+
+        .button-secondary:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-light {
+            background-color: var(--white);
+        }
+
+        .section-dark {
+            background-color: var(--off-white);
+        }
+
+        .section-title {
+            text-align: center;
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right,
+                    var(--primary-pink),
+                    var(--secondary-lavender));
+            margin: 20px auto;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+
+        .process-intro {
+            max-width: 700px;
+            margin: 0 auto 50px;
+            text-align: center;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 60px;
+            position: relative;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .process-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .process-number {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-pink);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            color: white;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 2;
+        }
+
+        .process-step:nth-child(even) .process-number {
+            left: auto;
+            right: 0;
+        }
+
+        .process-content {
+            flex: 1;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px var(--shadow);
+            text-align: left;
+            margin: 0 40px 0 60px;
+        }
+
+        .process-step:nth-child(even) .process-content {
+            margin: 0 60px 0 40px;
+        }
+
+        .process-image {
+            flex: 1;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 250px;
+        }
+
+        .process-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .specialty-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .specialty-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .specialty-img {
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .specialty-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .specialty-content {
+            padding: 30px;
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .specialty-tag {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background-color: var(--secondary-lavender);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .specialty-title {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .specialty-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-pink);
+            margin-top: 20px;
+        }
+
+        .specialty-action {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .specialty-action .button {
+            padding: 10px 25px;
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: 250px;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-title {
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .gallery-item .button {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
+
+        .process-step {
+            transition: transform 0.3s ease;
+        }
+
+        .contact-form button {
+            margin-top: 10px;
+        }
+
+        a:focus,
+        button:focus,
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: 2px solid var(--primary-pink);
+            outline-offset: 2px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .gallery-item-1 {
+            grid-column: span 2;
+        }
+
+        .gallery-item-5 {
+            grid-column: span 2;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .contact-form {
+            background-color: var(--white);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .contact-form h3 {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: var(--dark-text);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-pink);
+        }
+
+        .contact-details {
+            background-color: var(--off-white);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .contact-details h3 {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: var(--dark-text);
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .contact-info-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-pink);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .contact-info-content h4 {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: var(--dark-text);
+        }
+
+        .contact-info-content p {
+            margin-bottom: 0;
+            color: var(--light-text);
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-column h4 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+            color: white;
+        }
+
+        .footer-column h4::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-pink);
+        }
+
+        .footer-column p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-pink);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background-color: var(--primary-pink);
+        }
+
+        .footer-newsletter input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .footer-newsletter input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .footer-newsletter .button {
+            width: 100%;
+            margin: 0;
+            padding: 10px 15px;
+        }
+
+        .footer-copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .footer-copyright a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+        }
+
+        .footer-copyright a:hover {
+            color: var(--primary-pink);
+        }
+
+        @media (max-width: 992px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-details {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-button {
+                display: block;
+            }
+
+            .process-step,
+            .process-step:nth-child(even) {
+                flex-direction: column;
+            }
+
+            .process-content,
+            .process-step:nth-child(even) .process-content {
+                margin: 0 0 20px 0;
+            }
+
+            .process-number {
+                position: relative;
+                margin-bottom: 20px;
+            }
+
+            .gallery-container {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-item-1,
+            .gallery-item-5 {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">Sweetly Sculpted</a>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link">Home</a></li>
+                    <li><a href="#process" class="nav-link">Our Process</a></li>
+                    <li><a href="#specialties" class="nav-link">Specialties</a></li>
+                    <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                </ul>
+                <button class="mobile-menu-button">≡</button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Bespoke Cake Artistry & Design</h1>
+                    <p class="hero-subtitle">Crafting edible masterpieces that transform your celebrations into
+                        unforgettable moments. Each cake tells your unique story through flavour, texture, and artistic
+                        decoration.</p>
+                    <div class="hero-buttons">
+                        <a href="#gallery" class="button button-primary">Explore Our Creations</a>
+                        <a href="#contact" class="button button-secondary">Book a Consultation</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://assets.codepen.io/406785/hero-cake.webp"
+                        alt="Elegant tiered cake with intricate decorations">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process" class="section section-light">
+        <div class="container">
+            <h2 class="section-title">Our Design Process</h2>
+            <div class="process-intro">
+                <p>From concept to creation, we involve you in every step to ensure your cake is a perfect reflection of
+                    your vision and celebration.</p>
+            </div>
+
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="process-number">1</div>
+                    <div class="process-content">
+                        <h3>Consultation & Design</h3>
+                        <p>We begin with an in-depth consultation to understand your vision, event theme, and
+                            preferences. Our cake artists sketch custom designs tailored to your celebration.</p>
+                    </div>
+                    <div class="process-image">
+                        <img src="https://assets.codepen.io/406785/consultation.webp" alt="" />
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="process-number">2</div>
+                    <div class="process-content">
+                        <h3>Flavour Selection</h3>
+                        <p>Explore our signature flavours or work with our pastry chef to create a custom flavour
+                            profile. We offer complimentary tasting sessions to ensure your cake tastes as amazing as it
+                            looks.</p>
+                    </div>
+                    <div class="process-image">
+                        <img src="https://assets.codepen.io/406785/tasting.jpg" alt="" />
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="process-number">3</div>
+                    <div class="process-content">
+                        <h3>Artisan Creation</h3>
+                        <p>Our skilled cake artists meticulously craft each element of your cake using premium
+                            ingredients and artistic techniques. We focus on both visual appeal and exceptional taste.
+                        </p>
+                    </div>
+                    <div class="process-image">
+                        <img src="https://assets.codepen.io/406785/decorating.jpg" alt="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="specialties" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Featured Designs</h2>
+            <p class="section-subtitle">Explore our most popular cake designs and flavour combinations that have
+                delighted our clients for special occasions.</p>
+
+            <div class="specialty-cards">
+                <div class="specialty-card">
+                    <div class="specialty-img">
+                        <img src="https://assets.codepen.io/406785/cake14.webp" alt="Baroque Elegance wedding cake">
+                    </div>
+                    <div class="specialty-content">
+                        <span class="specialty-tag tag-wedding">Wedding</span>
+                        <h3 class="specialty-title">Baroque Elegance</h3>
+                        <p>A sophisticated multi-tiered masterpiece featuring intricate piping, edible gold leaf, and
+                            cascading sugar flowers. Perfect for luxurious weddings.</p>
+                        <div class="specialty-price">From $650</div>
+                        <div class="specialty-action">
+                            <a href="#contact" class="button button-primary">Enquire Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="specialty-card">
+                    <div class="specialty-img">
+                        <img src="https://assets.codepen.io/406785/cake13.webp"
+                            alt="Floral Symphony cake with edible flowers">
+                    </div>
+                    <div class="specialty-content">
+                        <span class="specialty-tag tag-celebration">Celebration</span>
+                        <h3 class="specialty-title">Floral Symphony</h3>
+                        <p>Elegantly designed with handcrafted edible flowers, this cake creates a stunning visual
+                            display. Each bloom is delicately formed to create a natural, garden-fresh appearance.</p>
+                        <div class="specialty-price">From $350</div>
+                        <div class="specialty-action">
+                            <a href="#contact" class="button button-primary">Enquire Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="specialty-card">
+                    <div class="specialty-img">
+                        <img src="https://assets.codepen.io/406785/cake3.webp"
+                            alt="Vintage Charm cake with classic styling">
+                    </div>
+                    <div class="specialty-content">
+                        <span class="specialty-tag tag-classic">Classic</span>
+                        <h3 class="specialty-title">Vintage Charm</h3>
+                        <p>Inspired by timeless design elements, our vintage style cakes feature delicate lace patterns,
+                            pearls, and nostalgic color palettes.</p>
+                        <div class="specialty-price">From $400</div>
+                        <div class="specialty-action">
+                            <a href="#contact" class="button button-primary">Enquire Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="section section-light">
+        <div class="container">
+            <h2 class="section-title">Cake Gallery</h2>
+            <p class="section-subtitle">Each cake tells a unique story. Browse our gallery for inspiration and discover
+                the possibilities for your own celebration.</p>
+
+            <div class="gallery-container">
+                <div class="gallery-item gallery-item-1">
+                    <img src="https://assets.codepen.io/406785/cake5.webp" alt="" />
+                    <div class="gallery-overlay">
+                        <h3 class="gallery-title">Floral Wedding</h3>
+                        <a href="#" class="button button-secondary">View Details</a>
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <img src="https://assets.codepen.io/406785/cake15.webp" alt="" />
+                    <div class="gallery-overlay">
+                        <h3 class="gallery-title">Whimsical Birthday</h3>
+                        <a href="#" class="button button-secondary">View Details</a>
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <img src="https://assets.codepen.io/406785/cake10.webp" alt="" />
+                    <div class="gallery-overlay">
+                        <h3 class="gallery-title">Botanical Delight</h3>
+                        <a href="#" class="button button-secondary">View Details</a>
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <img src="https://assets.codepen.io/406785/cake4.webp" alt="" />
+                    <div class="gallery-overlay">
+                        <h3 class="gallery-title">Vintage Romance</h3>
+                        <a href="#" class="button button-secondary">View Details</a>
+                    </div>
+                </div>
+
+                <div class="gallery-item gallery-item-5">
+                    <img src="https://assets.codepen.io/406785/cake11.webp" alt="" />
+                    <div class="gallery-overlay">
+                        <h3 class="gallery-title">Anniversary Splendour</h3>
+                        <a href="#" class="button button-secondary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Let's Create Together</h2>
+            <p class="section-subtitle">Ready to begin your cake journey? Contact us to schedule a consultation or
+                enquire about our services.</p>
+
+            <div class="contact-container">
+                <div class="contact-form">
+                    <h3>Start Your Cake Journey</h3>
+                    <form>
+                        <div class="form-group">
+                            <label for="name" class="form-label">Your Name</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Your Email</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="occasion" class="form-label">Select Your Occasion</label>
+                            <select id="occasion" class="form-control" required>
+                                <option value="" disabled selected>Please choose an option</option>
+                                <option value="wedding">Wedding</option>
+                                <option value="birthday">Birthday</option>
+                                <option value="corporate">Corporate Event</option>
+                                <option value="anniversary">Anniversary</option>
+                                <option value="other">Other Special Occasion</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message" class="form-label">Tell Us About Your Vision</label>
+                            <textarea id="message" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="button button-primary">Send Enquiry</button>
+                    </form>
+                </div>
+
+                <div class="contact-details">
+                    <h3>Contact Information</h3>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">🕒</div>
+                        <div class="contact-info-content">
+                            <h4>Studio Hours</h4>
+                            <p>Tuesday - Friday: 10am - 6pm<br>Saturday: 10am - 4pm<br>Consultations by appointment only
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h4>Sweetly Sculpted</h4>
+                    <p>We are a boutique cake design studio specialising in bespoke creations for discerning clients.
+                        Every cake is a handcrafted masterpiece, made with premium ingredients and artistic flair.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">f</a>
+                        <a href="#" class="social-link">in</a>
+                        <a href="#" class="social-link">ig</a>
+                        <a href="#" class="social-link">p</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#process">Our Process</a></li>
+                        <li><a href="#gallery">Gallery</a></li>
+                        <li><a href="#specialties">Specialties</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Cake Categories</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Wedding Cakes</a></li>
+                        <li><a href="#">Birthday Cakes</a></li>
+                        <li><a href="#">Corporate Events</a></li>
+                        <li><a href="#">Dessert Tables</a></li>
+                        <li><a href="#">Masterclasses</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column footer-newsletter">
+                    <h4>Join Our Mailing List</h4>
+                    <p>Subscribe to receive cake inspiration, exclusive offers, and invitations to special events.</p>
+                    <form>
+                        <input type="email" placeholder="Your Email Address" required>
+                        <button type="submit" class="button button-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-copyright">
+                <p>&copy; 2025 Sweetly Sculpted. All Rights Reserved. | <a href="#">Privacy Policy</a> | <a
+                        href="#">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        const menuButton = document.querySelector('.mobile-menu-button');
+        const navLinks = document.querySelector('.nav-links');
+        if (menuButton) {
+            menuButton.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+        }
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    history.pushState(null, null, targetId);
+                }
+            });
+        });
+        const observeElements = () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.process-step, .specialty-card, .gallery-item').forEach(el => {
+                el.classList.add('fade-in');
+                observer.observe(el);
+            });
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            observeElements();
+            const sections = document.querySelectorAll('section[id]');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= (sectionTop - 300)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
