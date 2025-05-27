@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>渐变背景页面</title>
+  <style>
+    :root {
+      --primary-hue: 210;
+      --primary-saturation: 100%;
+      --primary-lightness: 50%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(
+        154deg,
+        #07070915 30%,
+        hsla(var(--primary-hue), var(--primary-saturation), var(--primary-lightness), 0.3) 48%,
+        #07070915 64%
+      );
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+    }
+
+    .content {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      text-align: center;
+    }
+
+    h1 {
+      color: hsl(var(--primary-hue), var(--primary-saturation), var(--primary-lightness));
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>渐变背景页面</h1>
+    <p>这是一个使用自定义线性渐变作为背景的HTML页面。</p>
+    <p>背景使用的是：<br>
+      <code>linear-gradient(154deg, #07070915 30%, hsla(--primary) 48%, #07070915 64%)</code>
+    </p>
+    <p>您可以修改CSS中的 <code>--primary-hue</code> 等变量值来改变主色调。</p>
+  </div>
+</body>
+</html>
