@@ -1,0 +1,50 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #23243a 0%, #2e8bff 100%);
+}
+#gameCanvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    touch-action: none;
+    cursor: pointer;
+}
+
+/* 大厅关卡按钮美化 */
+.lobby-level-btn {
+    transition: box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0af 60%, #fff 100%);
+    border: 3px solid #fff;
+}
+.lobby-level-btn.locked {
+    background: #888;
+    border: 3px solid #aaa;
+    color: #f44;
+}
+.lobby-level-btn:hover:not(.locked) {
+    box-shadow: 0 0 24px #0af, 0 4px 16px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, #3cf 60%, #fff 100%);
+}
+
+/* 标题美化 */
+.lobby-title {
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 56px;
+    color: #fff;
+    text-shadow: 0 4px 24px #0af, 0 2px 8px #000;
+    letter-spacing: 4px;
+}
+
+.lobby-subtitle {
+    font-size: 28px;
+    color: #fff;
+    text-shadow: 0 2px 8px #0af;
+    margin-bottom: 24px;
+} 
