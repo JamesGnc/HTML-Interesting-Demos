@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X Code</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #4facfe, #00f2fe, #4facfe);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            color: #2c3e50;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(74, 137, 219, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #007cf8, #00dfd8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #4a6baf;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .input-area, .output-area {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #007cf8;
+            font-size: 1.1rem;
+        }
+        
+        textarea, .result-box {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(74, 137, 219, 0.3);
+            background: rgba(255, 255, 255, 0.7);
+            color: #2c3e50;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #007cf8;
+            box-shadow: 0 0 0 3px rgba(0, 124, 248, 0.2);
+        }
+        
+        .result-box {
+            min-height: 150px;
+            font-family: monospace;
+            overflow-wrap: break-word;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #007cf8, #00dfd8);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.7);
+            color: #007cf8;
+            border: 1px solid rgba(0, 124, 248, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .algorithm-info {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid #007cf8;
+        }
+        
+        .algorithm-info h3 {
+            color: #007cf8;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .algorithm-info p {
+            line-height: 1.7;
+            margin-bottom: 12px;
+            color: #4a6baf;
+        }
+        
+        .algorithm-info ul {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+        
+        .algorithm-info li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: #4a6baf;
+        }
+        
+        .history {
+            margin-top: 30px;
+        }
+        
+        .history h3 {
+            color: #007cf8;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-items {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 124, 248, 0.15);
+        }
+        
+        .history-original {
+            color: #4a6baf;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .history-encrypted {
+            color: #007cf8;
+            font-family: monospace;
+            max-width: 35%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .placeholder-text {
+            color: rgba(74, 107, 175, 0.5);
+            font-style: italic;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #007cf8;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transform: translateX(200%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .watermark {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .floating-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(-1000px) translateX(1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-bubbles" id="bubbles"></div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-lock"></i>Gerald Magic Code</h1>
+            <p class="subtitle">Make code to be monster</p>
+        </header>
+        
+        <main>
+            <div class="input-area">
+                <label for="inputText"><i class="fas fa-keyboard"></i> 输入要加密的字符串</label>
+                <textarea id="inputText" placeholder="在此输入文本..."></textarea>
+            </div>
+            
+            <div class="controls">
+                <button id="encryptBtn" class="btn btn-primary">
+                    <i class="fas fa-lock"></i> 加密字符串
+                </button>
+                <button id="decryptBtn" class="btn btn-secondary">
+                    <i class="fas fa-unlock"></i> 解密字符串
+                </button>
+                <button id="copyBtn" class="btn btn-secondary" disabled>
+                    <i class="fas fa-copy"></i> 复制结果
+                </button>
+                <button id="clearBtn" class="btn btn-secondary">
+                    <i class="fas fa-broom"></i> 清除
+                </button>
+            </div>
+            
+            <div class="output-area">
+                <label for="outputText"><i class="fas fa-lock-open"></i> 加密结果</label>
+                <div id="outputText" class="result-box">
+                    <span class="placeholder-text">加密结果将显示在这里...</span>
+                </div>
+            </div>
+            
+            <div class="algorithm-info">
+                <h3><i class="fas fa-code"></i> Base64 编码算法说明</h3>
+                <p>Base64是一种基于64个可打印字符来表示二进制数据的编码方式。</p>
+                
+                <p><strong>算法原理：</strong></p>
+                <ul>
+                    <li>将输入字符串转换为二进制数据（每个字符8位）</li>
+                    <li>将二进制数据按6位一组重新分组</li>
+                    <li>将每组6位二进制数转换为对应的Base64字符</li>
+                    <li>如果最后一组不足6位，则用0填充，并在编码结果后添加相应数量的'='字符</li>
+                </ul>
+                
+                <p><strong>特点：</strong></p>
+                <ul>
+                    <li>将任意二进制数据转换为可打印字符（A-Z, a-z, 0-9, +, /）</li>
+                    <li>编码后数据大小增加约33%</li>
+                    <li>常用于在文本协议中传输二进制数据（如电子邮件、网页传输）</li>
+                    <li>不是加密算法（无密钥），但使文本不可直接阅读</li>
+                </ul>
+                
+                <p>示例："Hello" → "SGVsbG8="</p>
+            </div>
+            
+            <div class="history">
+                <h3><i class="fas fa-history"></i> 历史记录</h3>
+                <div id="historyItems" class="history-items">
+                    <div class="placeholder-text">历史记录将显示在这里...</div>
+                </div>
+            </div>
+        </main>
+        
+        <div class="watermark">Gerald Author</div>
+    </div>
+    
+    <div id="notification" class="notification">
+        结果已复制到剪贴板！
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const encryptBtn = document.getElementById('encryptBtn');
+            const decryptBtn = document.getElementById('decryptBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const historyItems = document.getElementById('historyItems');
+            const notification = document.getElementById('notification');
+            const bubblesContainer = document.getElementById('bubbles');
+            
+            // 创建漂浮气泡
+            function createBubbles() {
+                const bubbleCount = 15;
+                
+                for (let i = 0; i < bubbleCount; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    
+                    // 随机大小和位置
+                    const size = Math.random() * 120 + 30;
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100 + 100;
+                    const delay = Math.random() * 15;
+                    const duration = Math.random() * 10 + 10;
+                    
+                    bubble.style.width = `${size}px`;
+                    bubble.style.height = `${size}px`;
+                    bubble.style.left = `${posX}%`;
+                    bubble.style.top = `${posY}%`;
+                    bubble.style.animationDelay = `${delay}s`;
+                    bubble.style.animationDuration = `${duration}s`;
+                    
+                    bubblesContainer.appendChild(bubble);
+                }
+            }
+            
+            let history = JSON.parse(localStorage.getItem('encryptionHistory')) || [];
+            
+            // 更新历史记录显示
+            function updateHistoryDisplay() {
+                if (history.length === 0) {
+                    historyItems.innerHTML = '<div class="placeholder-text">历史记录将显示在这里...</div>';
+                    return;
+                }
+                
+                historyItems.innerHTML = '';
+                // 只显示最近的5条记录
+                const recentHistory = history.slice(0, 5);
+                
+                recentHistory.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <span class="history-original" title="${item.original}">${item.original}</span>
+                        <span class="history-encrypted" title="${item.encrypted}">${item.encrypted}</span>
+                    `;
+                    historyItems.appendChild(historyItem);
+                });
+            }
+            
+            // 保存历史记录到localStorage
+            function saveToHistory(original, encrypted) {
+                history.unshift({
+                    original: original,
+                    encrypted: encrypted,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // 最多保存20条记录
+                if (history.length > 20) {
+                    history.pop();
+                }
+                
+                localStorage.setItem('encryptionHistory', JSON.stringify(history));
+                updateHistoryDisplay();
+            }
+            
+            // 自定义Base64编码函数
+            function base64Encode(str) {
+                const base64Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+                let result = '';
+                let i = 0;
+                
+                while (i < str.length) {
+                    // 获取三个字符的ASCII值
+                    const char1 = str.charCodeAt(i++);
+                    const char2 = str.charCodeAt(i++);
+                    const char3 = str.charCodeAt(i++);
+                    
+                    // 将三个8位字符转换为四个6位值
+                    const enc1 = char1 >> 2;
+                    const enc2 = ((char1 & 3) << 4) | (char2 >> 4);
+                    let enc3 = ((char2 & 15) << 2) | (char3 >> 6);
+                    let enc4 = char3 & 63;
+                    
+                    // 处理字符不足三个的情况
+                    if (isNaN(char2)) {
+                        enc3 = 64;
+                        enc4 = 64;
+                    } else if (isNaN(char3)) {
+                        enc4 = 64;
+                    }
+                    
+                    // 将6位值转换为Base64字符
+                    result += base64Chars.charAt(enc1) + base64Chars.charAt(enc2) + 
+                              (isNaN(char2) ? '=' : base64Chars.charAt(enc3)) + 
+                              (isNaN(char3) ? '=' : base64Chars.charAt(enc4));
+                }
+                
+                return result;
+            }
+            
+            // 自定义Base64解码函数
+            function base64Decode(str) {
+                const base64Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+                let result = '';
+                let i = 0;
+                
+                // 移除Base64字符串中的非Base64字符
+                str = str.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+                
+                while (i < str.length) {
+                    // 获取四个字符在Base64表中的索引
+                    const enc1 = base64Chars.indexOf(str.charAt(i++));
+                    const enc2 = base64Chars.indexOf(str.charAt(i++));
+                    const enc3 = base64Chars.indexOf(str.charAt(i++));
+                    const enc4 = base64Chars.indexOf(str.charAt(i++));
+                    
+                    // 将四个6位值转换为三个8位字符
+                    const char1 = (enc1 << 2) | (enc2 >> 4);
+                    const char2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                    const char3 = ((enc3 & 3) << 6) | enc4;
+                    
+                    // 将ASCII值转换为字符
+                    result += String.fromCharCode(char1);
+                    
+                    if (enc3 !== 64) {
+                        result += String.fromCharCode(char2);
+                    }
+                    if (enc4 !== 64) {
+                        result += String.fromCharCode(char3);
+                    }
+                }
+                
+                return result;
+            }
+            
+            // 加密函数
+            function encrypt() {
+                const originalText = inputText.value.trim();
+                
+                if (originalText === '') {
+                    outputText.innerHTML = '<span class="placeholder-text">请输入要加密的内容...</span>';
+                    copyBtn.disabled = true;
+                    return;
+                }
+                
+                // 使用自定义Base64编码
+                const encryptedText = base64Encode(originalText);
+                outputText.textContent = encryptedText;
+                copyBtn.disabled = false;
+                
+                // 保存到历史记录
+                saveToHistory(originalText, encryptedText);
+            }
+            
+            // 解密函数
+            function decrypt() {
+                const encryptedText = inputText.value.trim();
+                
+                if (encryptedText === '') {
+                    outputText.innerHTML = '<span class="placeholder-text">请输入要解密的内容...</span>';
+                    copyBtn.disabled = true;
+                    return;
+                }
+                
+                try {
+                    // 使用自定义Base64解码
+                    const decryptedText = base64Decode(encryptedText);
+                    outputText.textContent = decryptedText;
+                    copyBtn.disabled = false;
+                } catch (e) {
+                    outputText.innerHTML = '<span style="color:#ff6b6b">无效的Base64格式！</span>';
+                    copyBtn.disabled = true;
+                }
+            }
+            
+            // 复制结果到剪贴板
+            function copyResult() {
+                if (!outputText.textContent || outputText.textContent.includes('placeholder-text')) {
+                    return;
+                }
+                
+                navigator.clipboard.writeText(outputText.textContent).then(() => {
+                    // 显示通知
+                    notification.classList.add('show');
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 2000);
+                });
+            }
+            
+            // 清除输入和输出
+            function clearAll() {
+                inputText.value = '';
+                outputText.innerHTML = '<span class="placeholder-text">加密结果将显示在这里...</span>';
+                copyBtn.disabled = true;
+                inputText.focus();
+            }
+            
+            // 事件监听
+            encryptBtn.addEventListener('click', encrypt);
+            decryptBtn.addEventListener('click', decrypt);
+            copyBtn.addEventListener('click', copyResult);
+            clearBtn.addEventListener('click', clearAll);
+            
+            // 初始加载历史记录
+            updateHistoryDisplay();
+            
+            // 创建漂浮气泡
+            createBubbles();
+            
+            // 添加键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    encrypt();
+                } else if (e.ctrlKey && e.key === 'd') {
+                    decrypt();
+                } else if (e.ctrlKey && e.key === 'c') {
+                    copyResult();
+                }
+            });
+            
+            // 添加输入框的Enter键支持
+            inputText.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.shiftKey) {
+                    // 允许Shift+Enter换行
+                    return;
+                }
+                
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    encrypt();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
