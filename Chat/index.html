@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>精准对话版</title>
+<style>
+body { background:#0f172a; font-family:Arial; padding:20px; color:#e2e8f0;}
+.chat { max-width:900px; margin:auto;}
+.msg { margin:10px 0; display:flex;}
+.left { justify-content:flex-start;}
+.right { justify-content:flex-end;}
+.bubble { max-width:70%%; padding:12px; border-radius:10px; line-height:1.6; white-space:pre-wrap; word-break:break-word;}
+.left .bubble { background:#1e293b;}
+.right .bubble { background:#2563eb; color:white;}
+.role { font-size:12px; opacity:0.6; margin-bottom:4px;}
+</style>
+</head>
+<body>
+<div class="chat">
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">那其他我前面提到的技能 有没有具体实现的场景 没有就说没有
+
+
+后端核心（C#/.NET Core + RESTful API）：有落地。Web API 项目 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Provider\Program.cs:147（app.MapControllers()），控制器示例 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Provider\Controllers\NotifyController.cs:13（[Route("api/notify")]）。
+ORM（EF / SqlSugar）：SqlSugar 有落地（注册 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Provider\Program.cs:43，大量 ...Service.SqlSugar... 代码）；EF 没看到（仓库里未见 Microsoft.EntityFrameworkCore 相关引用/用法）。
+MySQL 建模/索引：有一定落地（连接串在 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Provider\appsettings.Local.json:2；迁移/建模工具存在 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tools\Tukun.GT.Archive.Tools.Database.Migration\Program.cs；索引属性示例 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tools\Tukun.GT.Archive.Tools.Database.Migration\SIMShop\Tables\SIMShopMember.cs:15)；“性能调优”层面的具体证据（慢 SQL、Explain、专项优化代码/文档）没看到。
+DevOps（Docker/Jenkins/Nginx）
+Docker：有落地（C:\Users\APP2\source\repos\tukun-gt-archive\Dockerfile，以及 C:\Users\APP2\source\repos\tukun-gt-archive\build.sh / C:\Users\APP2\source\repos\tukun-gt-archive\push.sh）。
+Jenkins：没看到（无 Jenkinsfile/pipeline 配置）。
+Nginx：没看到（无 nginx 配置文件/关键字）。
+全栈交付（Vue / 微信小程序开发）：前端代码没看到（仓库里没有 Vue/小程序工程）。但后端对“小程序/微信”有集成痕迹，例如小程序 AppId 获取与支付参数（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Helpers\WeChatHelper.cs:47）。
+工程效能（Git 团队流 / AI 辅助 / DnSpy）：这些在代码仓库里没看到可核验的落地材料（例如规范文档、脚本、配置或相关产物）。
+架构中间件（MQ / XXL-Job / 微服务&Spring Boot）
+MQ：有落地（RabbitMQ+MassTransit，入口 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Subscription\SubscriptionExtensions.cs:33）。
+XXL-Job：有落地（多个 [XxlJobHandler]，例如结算任务 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\XxlJob\MerchantOrderSettlementJobHandler.cs:11）。
+Spring Boot / Java 微服务：没看到（仓库中没有 Java/Spring Boot 项目）。此外 .NET 里有 AddSpringCaching（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Provider\Program.cs:107），但这不是 Spring Boot 项目本身。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">你帮查看一下 我们项目中控制并发是怎么处理的 以及订单并发</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">项目里“并发控制”目前主要靠这几套机制
+
+Redis 分布式锁（跨实例）：统一封装在 LockExtensions，底层用 StackExchange.Redis 的 LockTakeAsync/LockReleaseAsync。入口：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\LockExtensions.cs:35，真正加锁：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\LockExtensions.cs:118。
+
+已看到的落地场景：钱包/流量钱包变更、活动参与/权益发放这类“不可重复、强一致”的写操作（例如钱包：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\WalletExtensions.User.cs:20；活动：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Marketing\ActivityRewardEngine.cs:188）。
+乐观并发（DataToken）：对实现了 IDataTokenEntity 的实体，更新前校验“是否是最新版本”，不一致就拒绝更新。校验：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\EntityExtensions.cs:72；在批量更新里也有同样校验：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\SqlSugar\SqlSugarDbSet.Update.cs:52。
+
+目前明确用到的也是钱包相关（钱包变更里先 CheckDataTokenAsync）。
+数据库事务（Transactional / TransactionAsync）：支付回调、结算等关键路径用事务包裹，减少“部分成功”导致的数据错乱（例如支付完成：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.UserPay.cs:119）。
+
+订单相关并发（订单并发/支付并发/库存并发）你们现在是这样处理的</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">支付回调的“幂等/并发”主要靠状态判断：如果 UserPay.Status != UnPay 就直接返回“已支付”（并可合并更新 PaymentJson），见 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.UserPay.cs:106。然后在事务里把 pay 改成 Paid 并推进订单状态（...PaymentServiceImpl.UserPay.cs:126 起）。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">说明：这里没看到对 PaySn 做“条件更新（where status=UnPay）”或对订单/支付做“Redis 锁”的硬隔离；极端并发下更像“状态机+事务”方式在兜底。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">订单支付后处理用异步 Job，并带重试：支付成功后会创建 OrderAfterPaidJob（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\IOrderProvider.Static.cs:41），Job 执行时如果发现订单状态还没到 Paid，会认为可能“事务提交延迟/网络抖动”，延迟 1 秒重试（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderAfterPaidJob.cs:42）。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">订单刷新 Job 做了“去重”：OrderRefreshJob 用 RefreshJobId 记录，避免重复创建刷新任务（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderRefreshJob.cs:40）。
+
+库存并发（下单前锁库存）目前是“有入口但未实现”：下单前事件确实会调用 StockLockAsync（商城/酒店分别在 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Events\Shop\ShopOrders\ShopOrderCreateBeforeEventer.cs:13、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Events\Hotel\HotelOrders\HotelOrderCreateBeforeEventer.cs:13），但具体实现目前直接 return Task.CompletedTask; //TODO: 锁定库存（例如商城：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\ShopGoodsExtensions.cs:16），所以库存扣减的并发保护这块在当前代码里并没有真正落地。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如果你希望我进一步“专门把订单并发风险点列出来并给出建议改法（比如 pay 状态条件更新/订单维度锁/库存 Lua 原子扣减）”，我可以按你们现有代码结构给一版最小改动方案。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如果这个系统中的订单部分都是我负责的 那么 如果面试会问什么呢 并且给我看看我们有没有做订单快照功能</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">已处理 1m 32s</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如果订单部分都是你负责，面试里很可能会围绕“订单全链路一致性 + 可扩展性 + 并发幂等 + 结算/退款闭环”来问（而且会追问到你们项目里的具体落地）。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">订单架构/扩展性会问什么
+
+你们怎么支持多种订单类型（商城/酒店/停车/ESIM/分销…）并保持统一能力？（你们用的是 Provider 抽象：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs:16）
+订单状态机怎么设计？哪些状态允许支付/取消/关闭？如何保证状态迁移合法？（如停车单还有子状态 SubStatus 并映射到 Status，C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Parking\ParkOrder.cs:256）
+支付/回调幂等与并发会问什么
+
+支付回调重复通知怎么处理？并发两次回调会不会重复推进订单？（你们目前主要靠 pay 状态判断 + 事务：CompleteUserPayAsync 判断 UnPay，C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.UserPay.cs:106，并在事务内更新 pay + 推订单）
+支付后为什么要异步化？异步失败怎么重试？（你们支付后会创建 OrderAfterPaidJob：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\IOrderProvider.Static.cs:41，Job 里还考虑“事务提交延迟”并 1 秒重试：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderAfterPaidJob.cs:42）
+订单定时任务/超时关闭/刷新会问什么
+
+订单超时自动关闭怎么实现？（通用在 AutoCloseAsync 里创建 OrderAutoCloseJob：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs:44）
+如何避免重复创建刷新任务、重复刷新打爆下游？（你们用 RefreshJobId 去重：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderRefreshJob.cs:40）
+退款/部分退款会问什么
+
+多笔支付、部分退款怎么做？如何分摊到 pay 记录，保证可退金额计算正确？（你们按 pay 列表逐笔扣减生成退款：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\UserOrderExtensions.cs 里 CreateUserRefundAsync 逻辑）
+库存并发会问什么（这里要如实说现状）
+
+下单如何锁库存、防超卖？（你们有“下单前事件调用 StockLockAsync”的入口：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Events\Shop\ShopOrders\ShopOrderCreateBeforeEventer.cs:13，但 StockLockAsync 目前是 TODO 未实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\ShopGoodsExtensions.cs:16）
+我们有没有做“订单快照”功能？
+有，但形式是“字段快照内嵌在订单/订单明细里”，不是单独一张 OrderSnapshot 表那种通用快照体系。
+
+停车订单有明确的“价格快照”字段区：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Parking\ParkOrder.cs:203（例如 ChargeType/Price/SettlementPrice/TimeoutPrice...，用于锁定下单时计费规则与价格）。
+所有订单明细天生携带价格快照：BaseOrderItem 有 TotalFee/OriginalPrice/Price/DiscountFee 等（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrderItem.cs:21、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrderItem.cs:36、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrderItem.cs:41）。
+商城/流量等订单明细也存了商品信息快照：比如商城明细保存 GoodsTitle/GoodsSkuText/GoodsImage/SettlementPrice（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Shop\ShopOrderItem.cs:61、...ShopOrderItem.cs:67、...ShopOrderItem.cs:78），流量明细保存 ProductCode/ProductName/ProductText 等（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\ESIM\TrafficOrderItem.cs 里对应字段）。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如果你想让我按“面试口径”帮你把“订单快照”这件事组织成一段更有说服力的表述（为什么要快照、快照范围、如何用于售后/对账/结算/价格变更不影响历史订单），我也可以直接给你一版可背诵的答案。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">你可以给我针对我的系统来生成表述 并且给我专门生成 关于mq会问的问题 然后再给我说一说 我们酒店订单是如何设计的 以及对应表述</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">已处理 58s
+1) 基于你们系统的“订单负责人”表述（可直接面试讲）
+
+我负责订单域的核心链路：统一抽象多业务订单（商城/酒店/停车/ESIM/分销），通过 OrderProviderBase 做订单类型隔离与能力复用（支付后置、超时关闭、退款、日志、数据同步），避免各业务重复造轮子（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs:16）。
+在支付与状态推进上，采用“支付记录状态机 + 事务”保证幂等与一致性：回调重复到达时通过 pay 状态直接拦截，核心更新在事务内完成并推进订单（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.UserPay.cs:106、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.UserPay.cs:119）。
+对耗时后置流程（支付后处理、订单刷新、超时关闭、酒店自动接单/自动完成）做异步化：通过 MQ 的延迟队列/任务队列解耦主链路、提升吞吐，并对“事务提交延迟/抖动”加入 Job 重试兜底（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\IOrderProvider.Static.cs:41、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderAfterPaidJob.cs:42）。
+订单快照策略是“关键字段落库固化”：订单明细层面固化 OriginalPrice/Price/TotalFee/DiscountFee 等价格信息（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrderItem.cs:21），并在特定业务（如停车）固化计费规则与价格快照字段，保证后续价格规则变更不影响历史订单结算与售后（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Parking\ParkOrder.cs:203）。
+2) 面试“MQ（你们系统里的 RabbitMQ+MassTransit）”高频会问什么（按你们真实实现来）
+
+你们为什么要上 MQ？哪些链路一定要异步？（答：支付后置、延迟任务、通知/订阅、订单刷新；主链路降耗时、抗峰值）
+你们用的什么 MQ/框架，怎么接入的？（答：MassTransit.RabbitMQ；统一注册与扫描 consumer：...SubscriptionExtensions.cs:33）
+你们有哪些队列模型？如何区分优先级？（答：默认/高优先队列两套 consumer；QueueServiceBase 根据 JobLevel 发不同消息）
+你们怎么做“延迟消息/定时任务”？（答：用 x-delay 头 + x-delayed-message 交换机；并配置 scheduler：...MassTransitExtensions.cs:47、...MassTransitExtensions.cs:90、...SubscriptionExtensions.cs:40）
+消费端怎么保证队列不丢？（答：consumer endpoint durable + 不自动删除：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Subscription\ConsumerBase.cs 里 configure.Durable=true; AutoDelete=false;）
+重复消费/幂等怎么做？（结合业务答：支付回调、状态判断；订单刷新 job 去重用 RefreshJobId；更严格的“消息幂等表/去重键”当前代码里没看到就要如实说）
+失败重试怎么做？有没有重试策略/死信？（你们 ConsumerBase 里重试/熔断/限流配置是注释掉的，面试要诚实：目前主要靠业务 Job 级重试与流程兜底；若追问可讲计划启用 UseMessageRetry/CircuitBreaker）
+“事务与发消息一致性”怎么处理？（答：事务内先缓存事件，提交后再 publish，避免回滚但消息已发；ArchiveDbContext.EventBus + EventBusFeature）
+你们用 MQ 做事件总线还是任务队列？（答：两者都有：任务队列跑 Job；事件总线发布通知/支付后事件等）</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如何观测与排障？（答：队列维度可看积压；业务维度靠订单/结算日志；如果对方问 tracing/metrics，你可以说当前代码侧主要是日志+状态落库，后续可补 Prometheus/链路追踪）</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">3) 酒店订单如何设计（你们项目真实实现）+ 对应表述
+设计要点（你们代码里实际是这样）
+
+订单模型：HotelOrder 继承 BaseUserOrDistributorOrder，天然支持“用户/分销”两种销售主体；同时有酒店业务字段（HotelId/HotelRoomId/CheckInDate/CheckOutDate/GuestName/Mobile/SettlementAmount）和子状态 SubStatus，由子状态映射到通用 Status（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Hotel\HotelOrder.cs）。
+订单明细：HotelOrderItem 作为 BaseOrderItem<HotelOrder>，固化价格字段（OriginalPrice/Price/PayFee 等来自基类）并附带房型/套餐/入住天数等信息（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Hotel\HotelOrderItem.cs）。
+支付推进：由 HotelOrderProvider.CheckAndPaidAsync 调 order.OrderPayCompleted(pay) 更新 RemainPayFee/SubStatus/Status，落库后写日志，并创建“待确认超时自动接单”任务（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\HotelOrderProvider.cs:58）。
+超时自动化：
+待确认超时自动接单：HotelOrderAutoCheckJob（默认延迟约 60 分钟+10秒）执行 order.AutoCheckAsync(...)（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Hotel\HotelOrders\HotelOrderAutoCheckJob.cs:20、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelOrderExtensions.cs:25）
+离店后自动完成：HotelOrderAutoCompleteJob（按退房日计算延迟）执行 order.CompletedAsync(...)（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Hotel\HotelOrders\HotelOrderAutoCompleteJob.cs:23、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelOrderExtensions.cs:150）
+取消规则：通过 OrderExt 存 CancelRule，在扩展方法里计算“可取消窗口”（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelOrderExtensions.cs:191）。
+库存/占用释放：在订单失效/退款等场景走 BackStockSaleAsync 释放 UseStock、回滚销量/库存预警（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelOrderExtensions.cs:72）。
+酒店订单负责人表述（可直接讲）
+
+我们酒店订单采用“子状态驱动通用状态”的模型：支付后进入待确认、确认后入住、离店后完成，所有状态迁移在 Provider + Extension 层统一封装，并通过 MQ 延迟任务实现“待确认超时自动接单、离店后自动完成”，保证业务闭环自动化、减少人工介入（核心逻辑见 HotelOrderProvider、HotelOrderAutoCheckJob、HotelOrderAutoCompleteJob）。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">那关于订单方面的 你能给我一些 面试可能问到的问题嘛 尽量多一些 并且把我们系统的订单逻辑 设计 给我都表述一下 让我筹备我的面试</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">一段“开场表述”（60–90 秒，可直接背）
+
+我负责系统订单域的设计与交付，目标是用一套统一的订单基础能力承载多业务形态（商城/酒店/停车/ESIM/分销），同时保证支付、退款、结算、通知、超时关闭等关键链路在高并发下可控、可扩展、可追溯。
+在模型层用 BaseOrder/BaseUserOrDistributorOrder 抽象出通用字段与状态机，在业务层用 OrderProviderBase 做“按订单类型的策略分发”，把支付推进、取消/关闭、退款、自动任务等能力沉淀为可复用组件（核心：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrder.cs，C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs）。
+对耗时/延迟场景（支付后置、超时关闭、订单刷新、酒店自动接单/自动完成等）用 RabbitMQ+MassTransit 的队列/延迟消息异步化，降低主链路耗时并提升吞吐（队列入口：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service\Queues\QueueServiceBase.cs；接入：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Subscription\SubscriptionExtensions.cs）。
+在一致性上采用“事务内更新业务数据 + 事务后发布事件”的方式避免回滚脏消息（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\ArchiveDbContext.EventBus.cs）。
+你们系统的订单逻辑/设计（按模块讲清楚）
+1) 订单领域模型怎么抽象
+基础订单：BaseOrder 定义通用字段：OrderNo 唯一、金额字段（OrderAmount/PayFee/RemainPayFee/TotalDiscountFee）、通用状态 Status、退款/交付聚合状态、ExpireTime、Ext 扩展等（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrder.cs）。
+用户/分销统一承载：大量业务订单继承 BaseUserOrDistributorOrder，天然支持“用户单/分销单”两条销售主体链路（同文件 ...BaseOrder.cs 内）。
+订单类型分发：IOrderProvider.GetProviderOrDefault(order) + 各类型 Provider（如 HotelOrderProvider、ShopOrderProvider）把“不同订单类型的差异逻辑”隔离出来（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\IOrderProvider.Static.cs，C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\HotelOrderProvider.cs）。
+订单明细天然包含价格快照：BaseOrderItem 统一存 OriginalPrice/Price/TotalFee/PayFee/DiscountFee 等，订单明细本身就是“下单当时价格的落库快照”（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrderItem.cs）。
+2) 支付与订单状态推进怎么做
+支付记录先行：以 UserPay/DistributorPay 为支付事实，支付完成时更新 pay，再推进订单状态（核心实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.UserPay.cs、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.DistributorPay.cs）。
+支付后置异步：订单变为 Paid 后，会创建 OrderAfterPaidJob 异步跑后置流程（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\IOrderProvider.Static.cs:36，Job：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderAfterPaidJob.cs）。
+3) 取消/关闭/超时怎么做
+Provider 基类提供通用 AutoCloseAsync/CloseAsync/CancelAsync/InvalidAsync，并通过 MQ 延迟 Job 实现“到期自动关闭”（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs，超时 Job：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderAutoCloseJob.cs）。
+4) 退款怎么做（部分退款/多支付记录）
+退款会按订单下的已支付 pay 记录进行拆分、逐笔退，确保“可退金额 = 支付金额 - 已退金额”（用户单：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\UserOrderExtensions.cs；分销单：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\DistributorOrderExtensions.cs）。
+5) 结算怎么做（定时批处理）
+结算不是走 MQ Job，而是走 XXL-Job 定时批处理拉取待结算数据执行（商户结算/分销佣金结算）：
+C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\XxlJob\MerchantOrderSettlementJobHandler.cs
+C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\XxlJob\DistributorCommissionOrderExecuteJobHandler.cs
+6) 订单快照有没有
+有快照思想且已落地，但形态是“字段快照”：
+通用：订单明细 BaseOrderItem 的价格字段就是价格快照（...BaseOrderItem.cs）。
+停车：ParkOrder 明确有“价格快照”分区，固化计费规则与单价/超时价等（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Parking\ParkOrder.cs:203）。
+商城明细也固化了商品标题/规格/图片/结算价等（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Shop\ShopOrderItem.cs）。
+7) 并发/幂等做法（你面试一定会被追问）
+支付回调幂等：CompleteUserPayAsync/CompleteDistributorPayAsync 先检查 pay 状态，非 UnPay 直接认为已处理（...PaymentServiceImpl.UserPay.cs:99、...PaymentServiceImpl.DistributorPay.cs:99）。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">后置流程抗抖动：OrderAfterPaidJob 如果发现订单状态不是 Paid，会延迟重试（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderAfterPaidJob.cs:42）。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">库存并发：你们“下单前锁库存”入口存在，但目前 StockLockAsync 是 TODO 未真正落实（商城：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\ShopGoodsExtensions.cs；酒店同样是 TODO：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelRoomExtensions.cs）。这点面试要如实说清楚“入口/设计思路有，但当前版本未完成/或由其他系统保障”。
+酒店订单如何设计（你可用作专项回答）
+模型：HotelOrder 继承 BaseUserOrDistributorOrder，带酒店字段（入住/离店日期、房型/套餐、入住人信息、结算金额等），并引入子状态 SubStatus，子状态映射到通用 Status（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Hotel\HotelOrder.cs）。
+支付推进：HotelOrderProvider.CheckAndPaidAsync 更新 RemainPayFee/SubStatus/Status，并在 Paid 后创建“待确认超时自动接单”任务（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\HotelOrderProvider.cs）。
+自动化任务：
+待确认超时自动接单：HotelOrderAutoCheckJob（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Hotel\HotelOrders\HotelOrderAutoCheckJob.cs）调用 AutoCheckAsync（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelOrderExtensions.cs:25）。
+离店后自动完成：HotelOrderAutoCompleteJob（C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Hotel\HotelOrders\HotelOrderAutoCompleteJob.cs）调用 CompletedAsync（...HotelOrderExtensions.cs:150）。
+取消规则：取消规则存 Ext，由 CheckCancelRule 计算可取消窗口（...HotelOrderExtensions.cs:191）。
+库存回滚：BackStockSaleAsync 释放占用库存 UseStock 并回滚销量/库存预警（...HotelOrderExtensions.cs:72）。
+订单方向“尽量多”的面试问题清单（按主题分组）
+A. 领域建模/架构设计
+你们系统有哪些订单类型？为什么不做一张大订单表？
+OrderType/BusinessType 的边界怎么划分？如何新增一种订单类型？
+你们订单抽象的核心接口/基类有哪些？为什么要 Provider 模式？
+订单主表和订单明细表怎么组织？为什么要明细？
+订单扩展字段（Ext/Json）用于什么？如何避免 Ext 失控？
+哪些数据属于“事实数据”必须强一致？哪些可最终一致？
+订单日志怎么设计？如何用于对账/审计/排障？
+订单数据如何对外展示统一（不同订单类型 UI/接口字段差异）？
+B. 状态机/流程正确性
+订单状态有哪些？每个状态允许哪些操作？
+为什么酒店/停车有子状态 SubStatus？它与通用 Status 如何映射？
+支付后订单一定变 Paid 吗？是否存在部分支付/多次支付？
+未支付订单如何关闭/取消？关闭与取消的区别是什么？
+订单完成的判定条件是什么（交付/入住/签收/核销）？
+退款状态与订单状态如何解耦？订单可同时处于哪些组合状态？
+订单异常状态（支付成功但订单不存在/库存不足/价格变更）怎么处理？
+C. 支付/回调/幂等（高频追问）
+第三方支付回调为什么会重复？你如何做幂等？
+你们是以“订单状态”幂等还是以“支付单状态”幂等？为什么？
+如何保证“同一 PaySn 并发回调”不会推进两次？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">回调时如果系统重启/超时，怎么保证最终一致？</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">你们支付成功后为什么不直接同步跑完后置，而是异步？
+支付金额与订单应付金额不一致如何处理（补差/改价/优惠）？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如果支付完成后 MQ/Job 失败了，怎么补偿？</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">D. 并发控制/一致性
+系统里哪些地方必须加锁？为什么？
+分布式锁 vs 数据库锁 vs 乐观锁，你怎么取舍？
+你们系统有 Redis 锁吗？锁的 key 如何设计？锁超时如何处理？
+如何防止重复下单？如何防止重复扣库存？
+如何防止重复发券/重复发放活动奖励？
+如何避免“事务回滚但消息已发”的问题？
+如何保证订单与支付单更新在同一事务里？
+E. 库存/超卖（你可能会被问穿）
+下单前怎么锁库存？在哪里做？（事件？服务？DB？Redis？）
+秒杀/高并发时如何防超卖？用 Lua/原子扣减/预扣库存吗？
+库存回滚在什么时候做？退款/取消/关闭分别怎么处理？
+库存与销量字段如何保证不会出现负数/不一致？
+你们如何做库存预警与补货提醒？
+F. 退款/售后
+退款支持全额/部分/多次吗？如何拆分到支付记录？
+退款幂等怎么做？退款回调重复到达怎么处理？
+退款失败如何重试？如何避免资金风险？
+退款与库存回滚的顺序如何设计？
+退款时效/不可退款规则在哪里控制？
+G. 异步任务（MQ Job）与延迟队列
+订单超时关闭怎么做？为什么要延迟任务？
+订单刷新/轮询类任务如何避免重复创建和堆积？
+你们如何定义任务优先级？高优先与默认队列的业务场景？
+延迟消息怎么实现？RabbitMQ 插件/headers 方式的利弊？
+消费失败怎么处理？重试策略在哪里？死信/补偿机制有没有？
+任务执行如何做到可观测（日志/状态/JobId）？
+H. 结算/对账（电商常问）
+结算对象是谁（商户/分销/平台）？结算单怎么生成？
+为什么结算是批处理（XXL-Job）而不是实时？
+结算失败如何重试？如何防重复结算？
+结算与退款冲突如何处理？先退款还是先结算？
+对账怎么做？以什么为准（支付单/订单/第三方账单）？
+I. 快照/历史一致性
+为什么要订单快照？哪些字段必须快照？
+商品改价/规则变更后，历史订单如何保持可复现？
+快照放在订单/明细字段 vs 单独快照表，各自优缺点？
+你们如何保证展示用的标题/规格/图片不会随商品变更而变？
+J. 接口/安全/可用性
+订单接口如何做权限控制（用户/商户/分销）？
+防刷/限流怎么做？下单接口如何防重？
+如何处理跨服务依赖失败（物流/短信/支付）？
+灰度发布时如何保证订单链路稳定？
+如何设计回滚/补单/人工介入后台能力？
+K. 性能/数据规模
+订单查询如何做分页与索引？关键索引有哪些（OrderNo、UserId、Status、时间）？
+热点订单（爆款）查询如何优化？缓存怎么用？
+如何处理订单表膨胀（归档/冷热分离）？
+如何避免 N+1 查询（订单+明细+商品）？
+L. 工程化/可维护性（高级岗位常问）
+你如何写单测/集成测试覆盖订单状态机？
+线上故障如何定位（按订单号追踪日志/事件/Job）？
+你如何做代码结构治理（Provider、Extensions、Jobs 的边界）？
+如何做配置化（取消规则、结算规则）并保证可回滚？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如果你愿意，我可以把上面这些问题做成“你这套系统的标准答案卡片”（每题 3–6 句，带你们仓库里的对应实现点/文件），你面试前按卡片背就行。你更想准备哪类面试：偏业务电商、偏架构、还是偏高并发/中间件？</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">好的 你把他的标准答案都配套写出来 方便我查看
+
+
+下面是一份“按你们项目真实实现口径”的订单面试答题卡（把我之前列的问题做成可直接背的标准回答）。每题尽量控制在 3–6 句；涉及你们代码落地点我会给出对应文件路径，方便你自己对照。
+
+A. 领域建模 / 架构设计
+
+Q：系统有哪些订单类型？为什么不做一张大订单表？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：我们有多业务订单（商城/酒店/停车/ESIM 等），每类订单字段差异很大，如果做一张大表会导致字段膨胀、约束难维护、逻辑分支极多。我们采用“通用订单基类 + 各业务订单表”的方式，通用字段沉淀在 BaseOrder，业务字段放在各自订单表。这样新增业务订单时只需要扩展模型和对应 Provider，不会污染其他业务。核心基类在 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrder.cs。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：BusinessType / OrderType 边界怎么划分？
+A：BusinessType 表示业务域（例如 Hotel/Parking/Shop/ESIM），OrderType 表示订单类型枚举，用于路由到具体实现。系统通过 IOrderProvider.GetProviderOrDefault(order) 按 OrderType 找到对应 Provider 来承载差异逻辑。这样“同域不同类型”或“同类型不同主体（用户/分销）”都能稳定扩展。路由逻辑在 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\IOrderProvider.Static.cs。
+Q：你们订单抽象的核心基类/接口有哪些？
+A：模型层核心是 BaseOrder（订单通用字段）、BaseUserOrDistributorOrder（用户/分销共用订单主体）、BaseOrderItem（订单明细价格快照与扩展字段）。业务层用 OrderProviderBase<TOrder,TOrderItem> 抽象出订单能力：支付推进、超时关闭、取消/关闭/失效、退款、对账展示数据等。对应文件：...BaseOrder.cs、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrderItem.cs、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs。
+Q：为什么要 Provider 模式？
+A：不同订单类型的“支付后推进、退款、取消规则、展示字段、库存回滚”都有差异，直接在订单服务里写 if/else 会爆炸。Provider 把差异逻辑集中在每个订单类型的类里，公共逻辑留在基类；同时可以复用同一套 API/Job/事件机制。新增订单类型时只需要新增模型 + Provider 实现。典型例子：HotelOrderProvider、ShopOrderProvider。
+Q：订单主表与明细表怎么组织？为什么要明细？
+A：主表存订单聚合字段（总金额、状态、主体、过期时间、扩展等），明细表存“具体商品/房型/流量项”的快照与交付/退款等。这样既便于订单列表查询（主表），也能支持部分退款/部分交付/多商品等复杂场景（明细）。明细统一继承 BaseOrderItem，例如 ShopOrderItem、HotelOrderItem、TrafficOrderItem。对应路径：...BaseOrderItem.cs、...Shop\ShopOrderItem.cs、...Hotel\HotelOrderItem.cs、...ESIM\TrafficOrderItem.cs。
+Q：Ext(JSON 扩展字段) 用来干什么？如何避免失控？
+A：Ext 用于存放“非强结构、可能按业务演进变化”的字段，比如酒店取消规则、自动接单/自动完成标记、关闭/取消/完成时间戳等。我们会把常用 key 做成常量（例如 OrderExtDtoKeys 这类），并在业务扩展方法里统一读写，避免随处拼字符串。对关键流程字段仍建议结构化入表，Ext 只承载“可选增强信息”。酒店取消规则与完成标记在 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelOrderExtensions.cs 有明确使用。
+Q：哪些数据必须强一致？哪些可以最终一致？
+A：强一致：支付单状态、订单状态推进、退款金额/状态、库存占用与回滚（这类涉及资金/履约）。最终一致：支付后通知、短信邮件、订单刷新轮询、对外同步等。我们用事务保证强一致更新，用 MQ/Job 让后置流程最终一致。事务后发消息的机制见 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\ArchiveDbContext.EventBus.cs。
+Q：订单日志怎么做、解决什么？
+A：每类订单实现 IHasOrderLog<TLog>/IHasOrderItemLog<TLog>，在支付成功、自动关闭、退款等关键节点写日志，用于用户可见的“订单轨迹”与排障审计。Provider 在支付成功后会写“支付成功”日志（例如酒店：HotelOrderProvider.CheckAndPaidAsync）。失败/补偿也会落日志，方便对账与追溯。示例：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\HotelOrderProvider.cs。
+B. 状态机 / 流程正确性
+
+Q：订单状态有哪些？每个状态允许哪些操作？
+A：通用状态在 BaseOrder.Status：UnPay/Paid/Completed/Closed/Cancel 等（枚举在 Model.Enums）。通用规则：只有 UnPay 且未过期才允许支付（BaseOrder.CanApplyPayment()），UnPay 才允许取消/关闭（Provider 基类 CloseAsync/CancelAsync）。业务子状态（酒店/停车）映射到通用状态，确保通用接口能统一判断。代码：...BaseOrder.cs、...HotelOrder.cs、...ParkOrder.cs、...OrderProviderBase.cs。
+Q：为什么酒店/停车要子状态 SubStatus？
+A：通用状态粒度不够表达业务履约过程（例如酒店：待确认/已接单/已入住/已完成；停车：还有“超时补缴”这类子流程）。我们用 SubStatus 表达业务流程节点，再统一映射为 Status 供通用能力判断（支付/退款/结算等）。酒店映射在 HotelOrder.SyncOrderState()；停车映射在 ParkOrder.SyncStatus()。
+Q：支付后一定是 Paid 吗？有没有部分支付/多次支付？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：当前设计是 RemainPayFee 递减，减到 0 才推进到 Paid，并记录 PaidTime。代码里 OrderPayCompleted 就是这样写的（例如 HotelOrder.OrderPayCompleted）。如果未来要支持拆分多次支付，本质仍是多条 pay 记录累计扣减 RemainPayFee。示例：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Hotel\HotelOrder.cs。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：关闭与取消的区别？
+A：在你们通用实现里，两者都要求订单为 UnPay，都会写 Ext 时间戳并记录日志；语义上关闭更偏系统/超时，取消偏用户主动。实现上 Provider 基类分别写入 ClosedTime 或 CancelTime，并在失效流程里返还优惠等。代码：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs。
+Q：订单完成的判定条件怎么定义？
+A：不同业务不一样：酒店是“入住后到离店日期+自动完成”或人工完成；停车有超时补缴后完成；商城可能是发货/签收/核销后完成。系统用子状态 + 业务扩展方法控制完成入口，并配合异步 Job 自动推进。酒店自动完成在 HotelOrderAutoCompleteJob + HotelOrderExtensions.CompletedAsync。
+Q：退款状态与订单状态如何解耦？
+A：订单上有聚合退款状态字段（OrderRefundStatus/TotalRefundFee），明细/订单退款实体有更细的 RefundStatus/RefundFee。退款不一定改变主状态，但会影响结算、库存回滚与售后。Provider 通过 GetOrderRefundStatus 聚合退款状态。基类逻辑在 OrderProviderBase.GetOrderRefundStatus(...)。
+Q：支付成功但订单不存在/状态不一致怎么处理？
+A：支付回调推进时会先查 pay 对应订单，若订单不存在会返回 false 并记录异常（你们实现里有注释“非正常情况记录日志”，需要你面试时说明可加告警/补偿任务）。另外支付后置 Job 也考虑“事务延迟导致状态未到 Paid”，会延迟重试兜底。对应：...PaymentServiceImpl.UserPay.cs、...Jobs\Orders\OrderAfterPaidJob.cs。
+C. 支付 / 回调 / 幂等（高频）
+
+Q：第三方回调为什么会重复？你怎么做幂等？
+A：支付平台网络重试、回调超时、平台侧至少一次投递都会导致重复。我们以“支付单状态”为幂等锚点：只有 UnPay 才允许推进到 Paid；非 UnPay 直接返回“已支付”，最多合并更新 PaymentJson。用户支付在 CompleteUserPayAsync，分销支付在 CompleteDistributorPayAsync。文件：...PaymentServiceImpl.UserPay.cs、...PaymentServiceImpl.DistributorPay.cs。
+Q：为什么用支付单状态做幂等，而不是订单状态？
+A：支付事实更直接、更稳定，订单状态可能因为业务分支、子状态映射等更复杂。以 pay 为幂等锚点能确保同一笔交易只被“结算一次、推进一次”。推进订单时再根据订单当前状态做二次判断（例如只有 UnPay 才调用 CheckAndPaidAsync）。你们代码里就是先更新 pay，再查订单、若订单仍 UnPay 才推进。
+Q：并发两次回调会不会都通过 model.Status == UnPay？
+A：当前代码表现为“读状态判断 + 事务更新”，严格意义上最稳的是加数据库层条件更新/唯一约束来做原子幂等；你们现在的实现主要依赖事务隔离与后续状态检查。面试口径建议你说：已做业务幂等判断，若进一步增强会对 PaySn 做“where status=UnPay”的条件更新或加锁/唯一事件表，避免竞态窗口。对应实现位置：...PaymentServiceImpl.UserPay.cs:99 附近。
+Q：回调超时/系统重启如何保证最终一致？
+A：核心事实落库（pay、订单）后，后置流程通过 MQ Job 异步执行，且 Job 支持重试。比如支付后 OrderAfterPaidJob 会再次确认订单状态，避免因为抖动导致漏处理。长期一致性可以通过“订单刷新 Job”或后台补偿重跑。对应：...Jobs\Orders\OrderAfterPaidJob.cs、...Jobs\Orders\OrderRefreshJob.cs。
+Q：为什么支付成功后不直接同步跑完后置？
+A：支付回调是高并发入口，同步跑后置会让接口耗时变长、耦合下游、峰值时更容易拖垮。我们把支付后置（通知、刷新、后续业务动作）交给 MQ/Job，主链路只做“幂等推进状态+落库”。这样吞吐更稳定，失败也可以在队列里重试。实现：IOrderProvider.CheckAndPaidAsync 触发 OrderAfterPaidJob。
+D. 并发控制 / 一致性
+
+Q：系统里哪些地方必须加锁？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：资金/余额、活动权益发放、用户参与活动防重复、以及库存扣减（如果实现）属于必须加锁场景。你们已经对钱包/活动做了 Redis 分布式锁（LockEnsureSuccessAsync）+ DataToken 乐观校验。订单支付推进目前主要靠 pay 状态幂等与事务。锁实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\LockExtensions.cs。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：你们用的分布式锁是什么？key 怎么设计？
+A：用 StackExchange.Redis 的原生 LockTakeAsync/LockReleaseAsync，封装在 LockExtensions。key 通过 InstanceName + "lock:" + resource，resource 可以是实体维度（typeof(T).Name + ":" + id）或业务维度字符串。活动场景会拼“User+ActivityCode”等维度，避免重复参与/重复发放。示例：ActivityRewardEngine 的资源 key 构建与加锁。
+Q：乐观锁怎么做？
+A：对实现了 IDataTokenEntity 的实体，每次更新会更新 DataToken，更新前读取最新 DataToken 校验一致，否则拒绝更新（提示“数据不是最新”）。钱包变更流程会先 CheckDataTokenAsync，再执行更新，配合 Redis 锁双保险。实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\EntityExtensions.cs:72、...SqlSugarDbSet.Update.cs。
+Q：如何避免“事务回滚但消息已发”？
+A：你们的 EventBus 在事务中不会直接 Publish，而是把消息暂存到 EventBusFeature，等 ServiceUnitWork.CompleteAsync() 提交事务后再统一发布。这样能减少典型的 outbox 问题（虽然不等同于严格 outbox 表）。实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\ArchiveDbContext.EventBus.cs、C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service\Features\EventBusFeature.cs。
+E. 库存 / 超卖（你需要准备“诚实口径”）
+
+Q：下单如何锁库存、防超卖？
+A：你们在下单前事件里确实有调用 StockLockAsync 的入口（商城/酒店），说明设计上希望在“创建订单前”做库存校验与锁定。但目前 StockLockAsync 实现是 TODO 直接返回，没有真正落库/缓存的库存锁定逻辑。面试口径建议：说明已预留入口与方案（DB 悲观锁/Redis 预扣），当前版本还未完整实现或由其他系统承接。入口：...ShopOrderCreateBeforeEventer.cs、实现：...ShopGoodsExtensions.cs、...HotelRoomExtensions.cs。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">Q：如果要实现，你会怎么做？</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">A：高并发下优先 Redis 原子预扣（Lua）+ 超时释放，落库以订单为准；低并发可 DB 悲观锁校验库存。订单关闭/取消/退款时触发回滚释放。你们已有 MQ 超时关闭、退款回滚入口，补上“扣减/回滚”的原子实现即可闭环。这里属于“改进方案”，要明确区分“现状 vs 规划”。
+F. 退款 / 售后
+
+Q：支持部分退款吗？怎么拆分？
+A：支持按 pay 记录拆分退款：先取订单下已支付的 pay 列表，按策略排序（优先退余额等），然后逐笔计算可退金额并生成退款，直到满足本次退款金额。这样可以处理多笔支付、多次退款。用户侧实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\UserOrderExtensions.cs；分销侧实现：...DistributorOrderExtensions.cs。
+Q：退款完成后库存怎么处理？
+A：不同订单类型在 Provider 的 ReturnAsync/InvalidAsync 里处理库存回滚（例如酒店、商城都有 BackStockSaleAsync 调用）。酒店在 HotelOrderProvider.InvalidAsync/ReturnAsync 会调用 order.BackStockSaleAsync(...)。文件：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\HotelOrderProvider.cs、...Extensions\Tables\HotelOrderExtensions.cs。
+G. 异步任务（MQ Job）与延迟队列（订单相关）
+
+Q：订单超时关闭怎么做？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：订单创建支付单时会设置 ExpireTime，Provider 基类会创建 OrderAutoCloseJob 延迟执行；到期后如果仍未支付则自动关闭并同步订单。这样不需要轮询扫描全表，延迟任务更轻。实现：OrderProviderBase.AutoCloseAsync + OrderAutoCloseJob。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：支付后置为什么要 Job？怎么保证不会漏？
+A：支付后置（发事件、刷新订单、触发后续业务）可能依赖下游且耗时，用 Job 解耦提升吞吐。Job 执行时会再次读取订单，若发现状态未到 Paid，会延迟重试（你们写了“事务提交延迟”处理）。实现：OrderAfterPaidJob。
+Q：订单刷新怎么避免重复创建？
+A：OrderRefreshJob 对实现了 IOrderRefreshJob 的订单，把 jobId 记录在订单字段 RefreshJobId，存在就复用，不存在才创建并写回订单，达到去重效果。实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Jobs\Orders\OrderRefreshJob.cs。
+H. 结算 / 对账（你们已落地）
+
+Q：为什么结算用 XXL-Job 而不是实时？
+A：结算通常是批量、可容忍延迟的财务流程，实时会增加主链路复杂度与风险。你们采用 XXL-Job 定时分页扫描“到期待结算”的记录，逐单结算并写日志；失败会进入守护重试队列。商户结算与分销佣金结算分别在 MerchantOrderSettlementJobHandler、DistributorCommissionOrderExecuteJobHandler。
+Q：结算失败怎么重试、防重复？
+A：失败会标记 Fail 并入 ScheduleTaskDaemon，由 scheduleTaskDaemonHandler 拉取重试执行（守护机制）。结算任务本身只处理 Pending 且到期记录，避免重复处理已完成记录。守护机制代码在 C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\XxlJob\ScheduleTaskDaemonHandler.cs。
+I. 快照 / 历史一致性（你们已落地但不是单独快照表）
+
+Q：你们有没有订单快照？
+A：有，主要是“字段快照落库”。订单明细通过 BaseOrderItem 固化价格字段（OriginalPrice/Price/TotalFee/...），业务明细还固化展示字段（商城保存 GoodsTitle/GoodsSkuText/GoodsImage 等）。停车订单额外固化“计费规则与价格快照”（ParkOrder 的 ChargeType/Price/TimeoutPrice 等）。对应：...BaseOrderItem.cs、...ShopOrderItem.cs、...ParkOrder.cs:203。
+Q：为什么不做独立 OrderSnapshot 表？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：你们当前需求更偏“关键字段可复现”，用字段快照简单直观、查询也方便（不需要 join）。缺点是当快照范围扩大时会让订单表变厚；如果未来要做更完整的“全量快照/版本化回放”，可以引入独立快照表或 outbox/event-sourcing。面试时把“现状方案 + 演进方向”讲清楚即可。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">J. 酒店订单（专项高频，给你一套可背回答）
+
+Q：酒店订单状态机怎么设计的？
+A：酒店订单用 SubStatus 表达业务节点：未支付、待确认、已接单、已入住、已完成、已取消/已关闭，并通过 SyncOrderState() 映射到通用 Status 供通用能力判断。支付完成后进入 Pending(待确认)，若商家超时未确认则系统自动接单进入 Accepted；入住后到退房日触发自动完成进入 Completed。这套自动化通过 MQ 延迟 Job 实现，不依赖人工。核心：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Tables\Hotel\HotelOrder.cs、...HotelOrderAutoCheckJob.cs、...HotelOrderAutoCompleteJob.cs、...HotelOrderExtensions.cs。
+Q：酒店订单支付后为什么要自动接单？怎么实现？
+A：业务上要避免“商家长时间不处理导致履约停滞”。实现上在支付成功时由 HotelOrderProvider.CheckAndPaidAsync 创建 HotelOrderAutoCheckJob（默认 60 分钟+缓冲），Job 到点检查仍为 Pending 则调用 AutoCheckAsync 自动接单并写日志、同步订单。文件：...HotelOrderProvider.cs、...HotelOrderAutoCheckJob.cs、...HotelOrderExtensions.cs:25。
+Q：酒店订单如何自动完成？
+A：HotelOrderAutoCompleteJob 按退房日期计算触发时间（你们代码是退房日某个时间点差值 + 10 秒缓冲），到点后只有在 CheckIn 子状态才允许完成，调用 CompletedAsync 写完成时间与自动完成标记并同步订单。文件：...HotelOrderAutoCompleteJob.cs、...HotelOrderExtensions.cs:150。
+Q：酒店取消规则怎么做？
+A：取消规则存放在订单 Ext（CancelRule），通过 CheckCancelRule 统一计算是否可取消：例如不可取消、下单后 N 小时内可取消、入住前某时间点可取消等。这样规则可配置化，不需要每次改表结构。实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Extensions\Tables\HotelOrderExtensions.cs:191。
+K. 性能 / 数据规模 / 工程化（你按需挑重点背）
+
+Q：订单号如何保证唯一？
+A：BaseOrder 上有订单号唯一索引（DbUniqueIndex("uk_orderNo")），从数据层保证唯一性；生成规则由 OrderHelper.CreateNewSn(...) 这类工具统一生成。唯一索引位置：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrder.cs。
+Q：如何避免 N+1 查询？
+A：Provider 的 GetOrderDataAsync 会一次性查询订单明细并组装展示 DTO，尽量减少每条订单逐项查询。酒店 Provider 还会缓存/批量加载房型信息再映射。对应：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\HotelOrderProvider.cs。
+Q：你如何定位线上订单问题？
+A：以 OrderNo 为主键串联：查订单主表、支付单、订单日志、异步 Job（jobs 表）与通知事件（MQ）。你们代码里关键节点都有写日志（支付成功、自动接单、自动完成、结算等），并且异步任务是可重试的。面试时强调“可追溯：状态 + 日志 + 异步任务落库”。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">说明：你要的“全部问题都有标准答案”如果按 60+ 题逐条写，会非常长且很多题答案高度重复（幂等/状态机/异步/补偿）。我上面把“你们系统真正能落地背诵的核心题”做成了完整答题卡，并把关键实现点都对上了代码路径；剩余更偏“扩展/规划/通用理论”的题，如果你也想逐条覆盖，我可以再给你一版“完整 60+ 题逐条 Q&A（每题 3 句固定模板）”。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">你想要我把“剩余未覆盖的题”也补齐到严格的 60+ 条逐条 Q&A 吗？如果要，我建议你选一个面试方向：偏电商业务、偏架构中间件、偏高并发一致性，我会按方向把答案写得更像面试官爱听的版本。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">补齐把
+
+
+
+下面把“订单方向面试题 + 你们系统口径标准答案”补齐成一套完整题库（70 题）。每题都按你们当前实现来答；没做到的我会明确写“当前版本未落地/仓库未看到”，并给出你作为负责人合理的演进答法。
+
+你们系统最关键的代码锚点（面试被追问时可抛）
+
+订单通用模型：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Model\Base\BaseOrder.cs
+订单类型策略分发：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Providers\Order\OrderProviderBase.cs
+支付回调幂等推进：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Service.SqlSugar\Impl\PaymentServiceImpl.UserPay.cs
+MQ/订阅接入：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Subscription\SubscriptionExtensions.cs
+延迟消息实现：C:\Users\APP2\source\repos\tukun-gt-archive\src\Tukun.GT.Archive.Subscription\MassTransitExtensions.cs
+酒店自动接单/自动完成：...Service.SqlSugar\Jobs\Hotel\HotelOrders\HotelOrderAutoCheckJob.cs、...HotelOrderAutoCompleteJob.cs、...Extensions\Tables\HotelOrderExtensions.cs
+1) 领域建模 / 架构设计（10 题）
+Q：系统有哪些订单类型？为什么不是一张大订单表？
+A：多业务订单字段差异巨大（酒店/停车/商城/流量等），一张大表会字段膨胀、约束难控、代码 if/else 失控。我们用 BaseOrder 抽通用字段，各业务用独立订单表承载差异，业务逻辑通过 Provider 分发，扩展成本低。
+Q：BusinessType 和 OrderType 区别是什么？
+A：BusinessType 表示业务域（Hotel/Parking/Shop/ESIM），OrderType 用来路由到具体订单策略实现（Provider）。面试时强调：OrderType 决定“怎么处理订单”，BusinessType 更偏“归属/结算/统计口径”。
+Q：订单域的“聚合根”是谁？
+A：订单主表是聚合根（BaseOrder/各业务 Order），对外以订单号/订单 ID 提供一致语义；明细是聚合内部子实体（OrderItem），用于承载商品/房型/流量项以及部分退款/交付等差异能力。
+Q：为什么要订单明细？
+A：支持多商品/多房型、部分退款、逐项交付、逐项日志。明细还天然承担价格快照字段（BaseOrderItem 的 OriginalPrice/Price/TotalFee/...），保证历史订单可复现。
+Q：订单号如何保证唯一？
+A：数据层有唯一约束：BaseOrder 上 uk_orderNo（BaseOrder.cs 顶部）。生成规则集中在工具方法（如 OrderHelper.CreateNewSn），保证全系统一致的 SN 规范。
+Q：你们怎么把“用户单/分销单/游客单”等统一到一套接口？
+A：大量订单继承 BaseUserOrDistributorOrder，提供 UserId/DistributorId/DistributorUserId 等统一字段，并通过 GetSalesTarget() 推导销售主体。这样支付、退款、结算可以统一走一条链路，仅在 Provider 层做差异化处理。
+Q：Provider 模式解决了什么问题？
+A：把“按订单类型变化”的规则集中在对应 Provider（如 HotelOrderProvider、ShopOrderProvider），通用能力在 OrderProviderBase。新增一种订单类型只需新增模型 + Provider，不改核心链路。
+Q：订单展示（列表/详情）如何做统一？
+A：Provider 提供 GetOrderDataAsync 组装 OrderDataDto（标题、图片、items），前端展示不需要理解每个订单类型的表结构。酒店/商城 Provider 都实现了它。
+Q：Ext(JSON) 为什么存在？
+A：Ext 承载非强结构、可能演进的字段（如酒店取消规则、自动完成标记、关闭/取消/完成时间戳）。关键事实字段（金额、状态、主体、日期）仍结构化落库；Ext 更偏“可选增强与可配置规则”。
+Q：你作为负责人怎么保证订单域可维护？
+A：用清晰边界：模型层（状态/字段）、Provider（业务策略）、Extensions（状态迁移封装）、Jobs（异步任务）、Events（跨域事件）。同时保证每个状态迁移都落日志、都可追溯、都能补偿重跑。
+2) 状态机 / 流程正确性（12 题）
+Q：订单通用状态有哪些？
+A：通用状态在 BaseOrder.Status（如 UnPay/Paid/Completed/Closed/Cancel 等），并提供通用判断 CanApplyPayment()：仅未支付且未过期可支付（BaseOrder.cs）。
+Q：为什么酒店/停车需要子状态？
+A：通用状态不足以表达履约节点（酒店待确认/已接单/已入住/已完成；停车还有超时补缴）。子状态用于业务流程，映射到通用状态用于通用能力判断，避免把业务细节塞进通用枚举。
+Q：酒店订单状态怎么走？
+A：支付完成进入 Pending(待确认)，超时未确认系统自动接单变 Accepted，入住后为 CheckIn，离店后/到期自动完成为 Completed。映射到通用 Status：这些中间态多映射为 Paid，最终完成映射 Completed（HotelOrder.cs + HotelOrderExtensions.cs）。
+Q：为什么支付后不是直接 Completed？
+A：支付只是交易完成，不代表履约完成。酒店要经历确认与入住，商城要经历发货/签收/核销，停车要经历实际停车与补缴等。
+Q：订单关闭和取消允许在什么状态？
+A：你们 Provider 里 CloseAsync/CancelAsync 都限制 Status == UnPay，避免已支付后被误关闭。关闭/取消都会写 Ext 时间戳并落日志，保持一致的审计口径（OrderProviderBase.cs、HotelOrderProvider.cs 有覆盖子状态）。
+Q：过期时间 ExpireTime 作用？
+A：控制“是否允许继续支付”，并为自动关闭提供触发依据。若没有 ExpireTime，基类会默认设置 30 分钟并创建自动关闭 Job（OrderProviderBase.AutoCloseAsync）。
+Q：订单完成时你们写哪些信息？
+A：写 Ext completed 时间、自动完成标记等；酒店还会写实际离店日与实际天数（HotelOrderExtensions.CompletedAsync）。这些用于对账、售后规则、结算计算。
+Q：你们如何处理“支付回调到了，但订单状态还没到 Paid”？
+A：支付推进在事务里完成，但后置流程走异步 Job。OrderAfterPaidJob 里也显式处理了“理论不会出现/事务提交延迟”，会延迟 1 秒重试，保证最终链路不丢（OrderAfterPaidJob.cs）。
+Q：是否支持“部分支付”？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：当前模型以 RemainPayFee 递减为核心，理论可支持多次支付累加直到归零；但具体“多次支付入口/业务规则”要看支付单创建策略。你可以回答：设计上支持，实际业务目前以一次性支付为主。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：订单退款状态怎么聚合？
+A：通用基类与 Provider 里有 GetOrderRefundStatus 聚合逻辑：按退款单的 RefundFee/PayFee 汇总得出 None/Partial/All。各业务可覆盖更细逻辑，但酒店 Provider 目前直接按订单自身聚合。
+Q：订单交付状态如何处理？
+A：通用字段 OrderDeliveryStatus 在 BaseOrder，具体交付细节更多落在订单明细（如 TrafficOrderItem 的 DeliveryStatus）和业务流程里。面试可说：交付状态聚合为主表字段，明细存细粒度状态。
+Q：如何保证状态迁移合法？
+A：你们做法是“在扩展方法/Provider 内部判断当前状态/子状态再允许迁移”，例如 HotelOrderExtensions.AutoCheckAsync 只允许 Pending 自动接单、CompletedAsync 只允许 CheckIn 完成。把迁移入口集中，避免 controller/service 随意改状态。
+3) 支付 / 回调 / 幂等（12 题）
+Q：支付链路整体怎么走？
+A：创建支付单（UserPay/DistributorPay），第三方完成后回调 Complete*PayAsync，事务内更新支付单状态与字段，再推进订单状态（通过 Provider 的 CheckAndPaidAsync），最后触发支付后置 Job 与事件通知。
+Q：为什么要支付单（pay）而不是直接改订单？
+A：支付是独立事实，可能存在多笔支付、退款对账、渠道差异字段（transactionId、paymentJson）。以 pay 做源数据更方便幂等、对账与问题追踪。
+Q：回调幂等怎么做？
+A：以 pay 状态为幂等锚点：只有 Status == UnPay 才允许推进；否则直接返回“已支付”，最多合并更新 PaymentJson。实现就在 PaymentServiceImpl.UserPay.cs / DistributorPay.cs 的 Complete*PayAsync。
+Q：回调并发两次会不会重复推进？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：现状主要靠“状态判断 + 事务更新”降低重复推进概率，并且订单推进会再次检查订单当前状态（只在 UnPay 才推进）。更严格的做法是数据库层做条件更新（where status=UnPay）或加去重表/唯一事件键；如果面试追问，你要明确这是可演进点。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：为什么支付完成后要异步后置？
+A：回调是高并发入口，同步后置会导致耗时与下游耦合。你们用 MQ Job 承载后置（如 OrderAfterPaidJob），同时具备重试与延迟能力，提高吞吐和稳定性。
+Q：余额支付怎么保证并发安全？
+A：钱包变更会使用 Redis 分布式锁 + DataToken 乐观校验，确保同一钱包不会并发扣减导致余额错乱（例如 WalletExtensions.User.ChangeWalletAsync + LockEnsureSuccessAsync + CheckDataTokenAsync）。
+Q：订单支付成功后做了哪些后置？
+A：触发领域事件（用户/分销支付后事件）、创建订单刷新任务、以及业务侧 afterPaid provider 逻辑。OrderAfterPaidJob 会调用 IOrderEventProvider.AfterPaidAsync 并发事件、并继续创建刷新任务。
+Q：支付成功但订单不存在怎么处理？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：你们代码是“返回 false 并注释提示记录日志”，说明这个属于异常数据，需要告警/补偿处理。你可以回答：线上会把这类异常记录并加告警，必要时人工补单或补偿任务修复。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：支付金额与应付金额不一致怎么办？
+A：当前实现会根据回调 PaidAmount 写入实际支付 RealFee，订单推进逻辑依据订单自身 RemainPayFee 是否归零。若要做严格校验，可以在推进前校验 PaidAmount 与 RemainPayFee 的差异并拒绝/记录异常，这属于风控增强点。
+Q：如何防止“同一订单创建多个支付单”？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：仓库里没看到全局强约束（例如 orderId+status 的唯一索引）。你可以答：业务侧通常会通过“订单状态 + 查询未支付 pay”限制重复创建；若要更强可加唯一约束或幂等 token。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：支付回调顺序乱序怎么处理？
+A：幂等的关键是状态机：只要已经 Paid，就不会重复推进；乱序回调（晚到）会被状态判断拦截。若回调带来的字段需要补齐（paymentJson），你们允许“已支付时仅更新 paymentJson”。
+Q：退款与支付回调并发冲突怎么办？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：原则是都走事务并检查当前状态合法性：已退款/退款中不再允许重复退款；已支付不再允许重复支付推进。更严格的做法是订单维度锁或条件更新防竞态；你可以把它作为演进策略讲。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">4) 订单异步化（MQ Job）与延迟任务（10 题）
+Q：你们 MQ 用什么？
+A：RabbitMQ，客户端框架是 MassTransit（MassTransit.RabbitMQ）。统一在 SubscriptionExtensions 里注册 UsingRabbitMq 并扫描消费者。
+Q：你们 MQ 是任务队列还是事件总线？
+A：两者都有：任务队列主要跑“订单/通知/交付”等 Job；事件总线发布跨域通知消息（短信、邮件、快递订阅、订单支付后通知等）。
+Q：延迟消息怎么实现？
+A：发布时设置 x-delay header，消费端使用 x-delayed-message 交换机配置（MassTransitExtensions.PublishDelay + ReceiveEndpoint 配置）。同时还配置了 scheduler（UseMessageScheduler）。
+Q：订单超时关闭怎么做？
+A：创建订单/支付单后会安排 OrderAutoCloseJob 延迟执行，到期后读取订单状态，仍未支付则关闭并写日志。这样避免扫表轮询，延迟任务更轻且更可控。
+Q：为什么有高优先级队列？
+A：支付后置/退款后置/关键链路需要更快处理，避免被低优先任务挤压；你们用 HighQueue/DefaultQueue 两个 consumer 来隔离（HighQueueConsumer/DefaultQueueConsumer + QueueServiceBase 按 JobLevel 投递）。
+Q：消费失败怎么办？
+A：你们 ConsumerBase 里预留了重试/熔断/限流配置，但目前是注释状态；现实兜底更多靠“Job 自身可重试、状态幂等、延迟再执行”。面试时要如实说：当前重试主要在业务层，后续可开启 MassTransit 中间件重试与死信策略。
+Q：如何避免同一订单刷新任务重复创建？
+A：OrderRefreshJob 用 RefreshJobId 记录已创建任务，存在则复用，不存在才创建并写回订单，起到幂等与降噪的效果。
+Q：你们怎么做“事务内发消息一致性”？
+A：事务中不直接 Publish，而是先暂存到 EventBusFeature，等事务提交后 CommitEventBusAsync 再发布。这样降低“事务回滚但消息已发”的概率（不等同严格 outbox，但足够覆盖常见问题）。
+Q：为什么支付后置 Job 里还要检查订单状态？
+A：为防止事务提交延迟或回调抖动，Job 会读取订单状态；若仍不是 Paid，延迟 1 秒重试。属于最终一致的防抖策略。
+Q：你怎么监控 MQ 积压/故障？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：代码层面主要靠任务落库（jobs 表）、订单日志与执行状态；运维层可看 RabbitMQ 队列积压、消费者存活、失败率。若面试追问指标化，你可以补充：可接 Prometheus/日志采集、按 queue/jobName 做监控。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">5) 退款 / 售后 / 对账（8 题）
+Q：支持部分退款吗？
+A：支持。退款会按 pay 记录拆分退款金额：取已支付 pay 列表，按策略排序（优先余额等），逐笔退直到满足本次退款金额（UserOrderExtensions.CreateUserRefundAsync / DistributorOrderExtensions.CreateDistributorRefundAsync）。
+Q：为什么要按 pay 拆分退款？
+A：同一订单可能多笔支付、不同渠道，退款必须能回到对应渠道/对应支付记录，便于对账与风控。拆分后也便于处理“某一笔支付已退完、另一笔未退”的状态。
+Q：退款后库存怎么回滚？
+A：按订单类型在 Provider 的 ReturnAsync/InvalidAsync 里处理。酒店会调用 BackStockSaleAsync 释放占用库存、回滚销量；商城也有类似入口（具体商城扣减未完全落地，但回滚入口存在）。
+Q：退款幂等怎么做？</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">A：退款实体有 RefundStatus，重复回调/重复触发会被状态机拦截，避免重复退款推进。仓库里具体退款回调逻辑你可以再准备：核心口径仍是“状态幂等 + 事务更新”。</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">Q：退款时效怎么限制？
+A：Provider 基类 CanApplyRefundAsync 有“支付完成 3 个月后不可退”的规则。业务可覆盖更细规则（酒店取消规则是独立于退款的另一套规则）。
+Q：如何处理“已结算后退款”？
+A：一般策略是生成反向结算/冲正记录，或把退款纳入下一结算周期冲抵。你们项目结算是 XXL-Job 批处理，面试可说：结算单状态与退款状态会共同影响可结算范围，必要时做冲正补单。
+Q：如何做对账？
+A：以支付单（UserPay/DistributorPay）为支付事实，订单为业务事实，第三方账单为外部事实。对账通常是按支付渠道交易号/金额/时间拉链比对；异常落库并人工或补偿处理（这属于体系化能力，代码仓库未完整体现，可作为经验阐述）。
+Q：退款失败如何重试？
+A：可设计为“失败可重试的 Job + 幂等状态机”，避免重复提交。你们系统已经有 MQ Job 基础设施，能用同样方式实现退款重试任务。
+6) 库存 / 履约并发（8 题，务必诚实）
+Q：你们下单怎么锁库存？
+A：入口存在：下单前事件会调用 StockLockAsync（商城/酒店）。但当前 StockLockAsync 实现是 TODO 直接返回，说明库存锁定并未在当前仓库版本真正落地（...ShopGoodsExtensions.cs、...HotelRoomExtensions.cs）。
+Q：那现状如何避免超卖？
+A：从本仓库看不到完整的“原子扣库存”实现，所以现状超卖风险主要取决于外部约束（例如商品库存不敏感、或由上游/第三方保障）。面试要表述为：我们已设计好入口与方案，当前版本尚未完成或在另一个服务实现。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">Q：如果让你实现，你会怎么做？</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">A：高并发用 Redis Lua 原子预扣（包含校验、扣减、设置订单占用），并设置 TTL 防死锁；支付成功转正式扣减，关闭/取消/超时释放占用。低并发可 DB 悲观锁（select … for update）但要考虑死锁与性能。
+Q：库存回滚在什么时候触发？
+A：关闭/取消（未支付）应释放占用；退款成功应回滚真实库存/销量；部分退款按明细回滚。你们酒店回滚在 InvalidAsync/ReturnAsync 里有调用，说明回滚机制在酒店侧是有设计落点的。
+Q：酒店库存是怎么表示的？
+A：从代码看有 UseStock（占用库存）与 Stock/Sales 等字段更新逻辑，回滚会减少 UseStock 并更新 Stock/Sales（HotelOrderExtensions.BackStockSaleAsync + HotelRoomExtensions.DeleteSalesAsync）。这更像“占用+真实库存”的模型。
+Q：库存预警怎么做？
+A：你们有 CheckStockThresholdAsync 方法，但内部也标了 TODO（商城/酒店都有预警入口）。面试可说：库存预警逻辑预留了标准接口，当前版本主要在回滚/修改库存时触发检查，后续可完善记录与通知。
+Q：履约并发（同一订单被多次操作）怎么防？
+A：通用策略是“状态机校验 + 幂等更新 + 必要时加锁”。你们在酒店自动接单/完成里都先检查子状态再操作，属于典型“状态机幂等”。
+Q：如何保证同一订单不会重复创建异步任务？
+A：对刷新类任务你们用 RefreshJobId 去重；对超时关闭/酒店自动接单/完成是“按订单状态判断”幂等执行：即使重复创建，执行时不满足状态也会直接 return。
+7) 酒店订单专项（6 题）
+Q：酒店订单主表存哪些关键字段？
+A：主体（User/Distributor）、酒店/房型/套餐、入住离店日期、入住人信息、结算金额、子状态、退款字段等；并且有 Items/Logs 导航。核心在 HotelOrder.cs。
+Q：酒店支付后为什么是“待确认”？
+A：业务上需要商家确认接单；所以支付后进入 Pending，系统会在超时后自动接单保障履约。落地：支付成功时创建 HotelOrderAutoCheckJob。
+Q：自动接单怎么保证不误接？
+A：执行时会重新读取订单并校验 SubStatus==Pending 才会接单；否则直接 return。即使任务重复投递也不会重复变更，属于幂等状态迁移。
+Q：自动完成为什么要按离店日期触发？
+A：酒店履约自然边界是退房，离店后订单应完成以进入结算/评价/售后阶段。你们实现按 CheckOutDate 计算延迟，并只对 SubStatus==CheckIn 的订单执行完成，避免误完成未入住订单。
+Q：酒店取消规则如何表达？
+A：取消规则作为可配置策略放在 Ext（CancelRuleDto），CheckCancelRule 统一计算窗口：不可取消、下单后 N 小时、入住前某时刻等。这样规则可调整而不改表。
+Q：酒店退款/失效如何释放库存？
+A：在 InvalidAsync/ReturnAsync 里调用 BackStockSaleAsync，释放 UseStock 并回滚库存/销量，同时做库存预警检查。属于“失效/退款触发资源归还”的标准模式。
+8) 结算 / 分销 / 财务闭环（6 题）
+Q：结算为什么不走 MQ，而用 XXL-Job？
+A：结算是批处理，通常每天/定时跑，适合用调度器统一控制窗口与速率。你们有商户结算与分销佣金结算两个 handler，分页扫描到期 Pending 记录逐单执行。
+Q：结算如何避免重复执行？
+A：只取 Status==Pending 且 EstimatedSettlementTime<=今天 的记录，结算成功会更新状态并写日志；已完成不会再次进入待处理集合。失败则标记 Fail 并进入守护重试。
+Q：守护重试怎么做？
+A：异常时调用 DaemonQueueAsync 落库 ScheduleTaskDaemon，由 scheduleTaskDaemonHandler 拉取执行对应 handler 的 DaemonExecuteAsync 做重试。相当于“结算失败的二次队列”，并且状态落库可追踪。
+Q：分销佣金结算与商户结算差别？
+A：数据源不同：一个处理 MerchantOrderSettlement，一个处理 DistributorOrderSettlement；执行方法不同（OrderSettlementAsync vs CommissionSettlementAsync）。但框架一致：分页扫描、逐单处理、失败入守护重试。
+Q：结算与退款冲突怎么处理？
+A：原则是以订单/退款状态与结算状态共同约束可结算范围：退款中的单不应结算，已结算后退款需冲正。你们当前代码没有完整冲正体系展示，但结算是可重跑、可记录日志的，具备扩展冲正的基础。
+Q：如何保证结算任务高可用？
+A：调度器侧（XXL-Job）保证任务触发与失败告警；业务侧分页与幂等（只处理 Pending）保证重复触发不产生重复结算；失败落库守护重试保证可恢复。</div>
+  </div>
+</div>
+
+<div class="msg right">
+  <div>
+    <div class="role">我</div>
+    <div class="bubble">如果你希望“更好背”，我也可以把这 70 题再加工成两份材料：</div>
+  </div>
+</div>
+
+<div class="msg left">
+  <div>
+    <div class="role">AI</div>
+    <div class="bubble">高频20题必背版（每题 2 句，适合临场）
+深挖追问版（每题再附 2–3 条追问与回应）
+你面试岗位更偏：电商业务负责人、架构负责人、还是偏中间件/高并发？我可以按岗位把“答题优先级”和“说法”再优化一版。</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
